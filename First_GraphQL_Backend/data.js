@@ -1,31 +1,35 @@
-const authors = [{
-    id: "1",
-    name:"Ahmed",
-    surname: "Mitrovic",
-    age: 21,
-    books: [
-        {
-            id: "1",
-            title: "Domuz Emi",
-            score: 3.2,
-            isPublished: false
-        },
-        {
-            id: "2",
-            title: "Elas Keas",
-            score: 9,
-            isPublished: true
-        }
-    ]
-}]
+const authors = [
+    {
+        id: "1",
+        name: "Ahmed",
+        surname: "Mitrovic",
+        age: 21,
+    },
+    {
+        id: "2",
+        name: "Kerem",
+        surname: "Muhsin",
+        age: 54,
+    },
+]
 
-const books = [{
-    id: "1",
-    title: "Şeker Portakalı",
-    author: authors[0],
-    score: 7.5,
-    isPublished: true
-}];
+const books = [
+    {
+        id: "1",
+        title: "Şeker Portakalı",
+        author_id: "1",
+        score: 9,
+        isPublished: true
+    },
+    {
+        id: "2",
+        title: "Terma Ela",
+        author_id: "2",
+        score: 2.5,
+        isPublished: false
+    }
+
+];
 
 module.exports = {
     authors,
