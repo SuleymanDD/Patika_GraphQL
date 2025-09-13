@@ -1,20 +1,61 @@
 const {ApolloServer , gql} = require("apollo-server");
 const {ApolloServerPluginLandingPageGraphQLPlayground} = require("apollo-server-core");
 
+const author = {
+    id: "1",
+    name:"Ahmed",
+    surname: "Mitrovic",
+    age: 21,
+    books: [
+        {
+            id: "1",
+            title: "Domuz Emi",
+            score: 3.2,
+            isPublished: false
+        },
+        {
+            id: "2",
+            title: "Elas Keas",
+            score: 9,
+            isPublished: true
+        }
+    ]
+}
+const book ={
+    id: "jkdsf7as912b",
+    title: "Şeker Portakalı",
+    author,
+    score: 7.5,
+    isPublished: true
+};
+
 const typeDefs = gql`
+    type Author {
+        id: ID!
+        name: String!
+        surname: String
+        age:Int
+        books: [Book!]
+    }
+
     type Book {
-        title: String
-        author: String
+        id: ID!
+        title: String!
+        author: Author
+        score: Float
+        isPublished: Boolean
     }
 
     type Query {
-        books: [Book]
+        book: Book
+        author: Author
     }
 `;
 
 const resolvers = {
     Query: {
-        books: () => [{title: "Yabancı", author: "Albert Camus"}],
+        book: () => book,
+        author: () => author
     },
 };
 
