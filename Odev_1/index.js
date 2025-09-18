@@ -1,5 +1,5 @@
 const {ApolloServer , gql} = require("apollo-server");
-const {ApolloServerPluginLandingPageGraphQLPlayground} = require("apollo-server-core");
+const {nanoid} = require("nanoid");
 
 const {events, locations, users, participants} = require("./data");
 
@@ -17,6 +17,14 @@ const typeDefs = gql`
         location_id: ID!
         user_id: ID!
     }
+
+    input CreateEventInput{
+        title: String!, desc: String!, date: String!, from: String!, to: String!, location_id: ID!, user_id: ID!
+    }
+    input UpdateEventInput{
+        title: String, desc: String, date: String, from: String, to: String, location_id: ID, user_id: ID
+    }
+
     type Location {
         id: ID!
         name: String
@@ -24,33 +32,247 @@ const typeDefs = gql`
         lat: Float
         lng: Float
     }
+
+    input CreateLocationInput{
+        name: String!, desc: String!, lat: Float!, lng: Float!
+    }
+    input UpdateLocationInput{
+        name: String, desc: String, lat: Float, lng: Float
+    }
+
     type User {
         id: ID!
         username: String
         email: String
     }
+
+    input CreateUserInput{
+        username: String!, email: String!
+    }
+    input UpdateUserInput{
+        username: String, email: String
+    }
+
     type Participant {
         id: ID!
         user_id: ID!
         event_id: ID!
     }
 
+    input CreateParticipantInput{
+        user_id: ID!, event_id: ID!
+    }
+    input UpdateParticipantInput{
+        user_id: ID, event_id: ID
+    }
+
+    type DeleteAllData{
+        count: Int!
+    }
+
     type Query {
+        # Event
         events: [Event!]!
         event(id: ID!): Event!
 
+        # Location
         locations: [Location!]!
         location(id: ID!): Location!
 
+        # User
         users: [User!]!
         user(id: ID): User
 
+        # Participant
         participants: [Participant!]!
         participant(id: ID!): Participant!
+    }
+
+    type Mutation {
+        # Event
+        createEvent(data: CreateEventInput!): Event!
+        updateEvent(id: ID!, data: UpdateEventInput!): Event!
+        deleteEvent(id: ID!): Event!
+        deleteAllEvents: DeleteAllData!
+
+        # Location
+        createLocation(data: CreateLocationInput!): Location!
+        updateLocation(id: ID!, data: UpdateLocationInput!): Location!
+        deleteLocation(id: ID!): Location!
+        deleteAllLocations: DeleteAllData!
+
+        # User
+        createUser(data: CreateUserInput!): User!
+        updateUser(id: ID!, data: UpdateUserInput!): User!
+        deleteUser(id: ID!): User!
+        deleteAllUsers: DeleteAllData!
+
+        # Participant
+        createParticipant(data: CreateParticipantInput!): Participant!
+        updateParticipant(id: ID!, data: UpdateParticipantInput!): Participant!
+        deleteParticipant(id: ID!): Participant!
+        deleteAllParticipants: DeleteAllData!
     }
 `;
 
 const resolvers = {
+    Mutation: {
+        // Event
+        createEvent: (parent, {data}) => {
+            const createdEvent = {
+                id:nanoid(),
+                ...data,
+            }
+            events.push(createdEvent);
+            return createdEvent;
+        },
+        updateEvent: (parent, {id, data}) => {
+            const event_index = events.findIndex(event => event.id == id);
+            if(event_index===-1){
+                throw new Error("Event is not found!");
+            }
+
+            const updatedEvent = {
+                ...events[event_index],
+                ...data,
+            }
+            return updatedEvent;
+        },
+        deleteEvent: (parent, {id}) => {
+            const event_index = events.findIndex(event => event.id== id);
+            if(event_index===-1){
+                throw new Error("Event is not found!");
+            }
+
+            const deletedEvent = events[event_index];
+            events.splice(event_index,1);
+            return deletedEvent;
+        },
+        deleteAllEvents: (parent, args) => {
+            const length= events.length;
+            events.splice(0,length);
+            return{
+                count: length
+            }
+        },
+
+        // Location
+        createLocation: (parent, {data}) => {
+            const createdLocation = {
+                id:nanoid(),
+                ...data,
+            }
+            locations.push(createdLocation);
+            return createdLocation;
+        },
+        updateLocation: (parent, {id, data}) => {
+            const location_index = locations.findIndex(location => location.id == id);
+            if(location_index===-1){
+                throw new Error("Location is not found!");
+            }
+
+            const updatedLocation = {
+                ...locations[location_index],
+                ...data,
+            }
+            return updatedLocation;
+        },
+        deleteLocation: (parent, {id}) => {
+            const location_index = locations.findIndex(location => location.id== id);
+            if(location_index===-1){
+                throw new Error("Location is not found!");
+            }
+
+            const deletedLocation = locations[location_index];
+            locations.splice(location_index,1);
+            return deletedLocation;
+        },
+        deleteAllLocations: (parent, args) => {
+            const length= locations.length;
+            locations.splice(0,length);
+            return{
+                count: length
+            }
+        },
+
+        // User
+        createUser: (parent, {data}) => {
+            const createdUser = {
+                id:nanoid(),
+                ...data,
+            }
+            users.push(createdUser);
+            return createdUser;
+        },
+        updateUser: (parent, {id, data}) => {
+            const user_index = users.findIndex(user => user.id == id);
+            if(user_index===-1){
+                throw new Error("User is not found!");
+            }
+
+            const updatedUser = {
+                ...users[user_index],
+                ...data,
+            }
+            return updatedUser;
+        },
+        deleteUser: (parent, {id}) => {
+            const user_index = users.findIndex(user => user.id== id);
+            if(user_index===-1){
+                throw new Error("User is not found!");
+            }
+
+            const deletedUser = users[user_index];
+            users.splice(user_index,1);
+            return deletedUser;
+        },
+        deleteAllUsers: (parent, args) => {
+            const length= users.length;
+            users.splice(0,length);
+            return{
+                count: length
+            }
+        },
+
+        // Participant
+        createParticipant: (parent, {data}) => {
+            const createdParticipant = {
+                id:nanoid(),
+                ...data,
+            }
+            participants.push(createdParticipant);
+            return createdParticipant;
+        },
+        updateParticipant: (parent, {id, data}) => {
+            const participant_index = participants.findIndex(participant => participant.id == id);
+            if(participant_index===-1){
+                throw new Error("Participant is not found!");
+            }
+
+            const updatedParticipant = {
+                ...participants[participant_index],
+                ...data,
+            }
+            return updatedParticipant;
+        },
+        deleteParticipant: (parent, {id}) => {
+            const participant_index = participants.findIndex(participant => participant.id== id);
+            if(participant_index===-1){
+                throw new Error("Participant is not found!");
+            }
+
+            const deletedParticipant = participants[participant_index];
+            participants.splice(participant_index,1);
+            return deletedParticipant;
+        },
+        deleteAllParticipants: (parent, args) => {
+            const length= participants.length;
+            participants.splice(0,length);
+            return{
+                count: length
+            }
+        },
+    },
     Query: {
         events: () => events,
         event: (parent,args) => events.find((event)=> event.id == args.id),
@@ -74,10 +296,5 @@ const resolvers = {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    plugins: [
-        ApolloServerPluginLandingPageGraphQLPlayground({
-            //OPTİONS
-        }),
-    ],
 });
 server.listen().then(({url}) => console.log(`Appolo server is working at ${url}`));
