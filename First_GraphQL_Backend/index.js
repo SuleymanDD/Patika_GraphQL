@@ -4,6 +4,22 @@ const { nanoid } = require("nanoid");
 const {books, authors} = require("./data");
 
 const typeDefs = gql`
+    type Book {
+        id: ID!
+        title: String!
+        author: Author
+        author_id: String!
+        score: Float
+        isPublished: Boolean
+    }
+
+    input CreateBookInput{
+        title: String!, author_id: ID!, score: Float!, isPublished: Boolean!
+    }
+    input UpdateBookInput{
+        title: String, author_id: ID, score: Float, isPublished: Boolean
+    }
+
     type Author {
         id: ID!
         name: String!
@@ -15,35 +31,35 @@ const typeDefs = gql`
     input CreateAuthorInput{
         name: String!, surname: String!, age: Int!
     }
-
-    type Book {
-        id: ID!
-        title: String!
-        author: Author
-        author_id: String!
-        score: Float
-        isPublished: Boolean
+    input UpdateAuthorInput{
+        name: String, surname: String, age: Int
     }
 
-    input CreateBookInput{
-        title: String!, author_id: ID!, score: Float!, isPublished: Boolean
-    }
 
     type Query {
+        # Book
         books: [Book!]
         book(id: ID!): Book!
+
+        # Author
         authors: [Author!]
         author(id: ID!): Author!
     }
     
     type Mutation {
+        # Book
         createBook(data: CreateBookInput!): Book!
+        updateBook(id: ID!, data: UpdateBookInput!): Book!
+
+        # Author
         createAuthor(data: CreateAuthorInput!): Author!
+        updateAuthor(id: ID!, data: UpdateAuthorInput!): Author!
     }
 `;
 
 const resolvers = {
     Mutation: {
+        // Book
         createBook: (parent, {data}) => {
             const book = {
                 id: nanoid(),
@@ -53,6 +69,21 @@ const resolvers = {
             books.push(book);
             return book;
         },
+        updateBook: (parent, {id, data}) => {
+            const book_index = books.findIndex((book) => book.id === id);
+
+            if(book_index === -1){
+                throw new Error("Book is not found!");
+            }
+
+            const updatedBook= {
+                ...books[book_index],
+                ...data,
+            }
+            return updatedBook;
+        },
+
+        // Author
         createAuthor: (parent, {data}) => {
             const author= {
                 id: nanoid(),
@@ -61,6 +92,19 @@ const resolvers = {
 
             authors.push(author);
             return author;
+        },
+        updateAuthor: (parent, {id, data}) => {
+            const author_index = authors.findIndex((author) => author.id === id);
+
+            if(author_index === -1){
+                throw new Error("Author is not found!");
+            }
+
+            const updatedAuthor= {
+                ...authors[author_index],
+                ...data,
+            }
+            return updatedAuthor;
         }
     },
     Query: {
