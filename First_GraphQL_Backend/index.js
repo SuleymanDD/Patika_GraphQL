@@ -1,5 +1,4 @@
 const {ApolloServer , gql} = require("apollo-server");
-const {ApolloServerPluginLandingPageGraphQLPlayground} = require("apollo-server-core");
 const { nanoid } = require("nanoid");
 
 const {books, authors} = require("./data");
@@ -12,6 +11,10 @@ const typeDefs = gql`
         age:Int
         books(filter: String): [Book!]
     }
+    
+    input CreateAuthorInput{
+        name: String!, surname: String!, age: Int!
+    }
 
     type Book {
         id: ID!
@@ -22,6 +25,10 @@ const typeDefs = gql`
         isPublished: Boolean
     }
 
+    input CreateBookInput{
+        title: String!, author_id: ID!, score: Float!, isPublished: Boolean
+    }
+
     type Query {
         books: [Book!]
         book(id: ID!): Book!
@@ -30,32 +37,26 @@ const typeDefs = gql`
     }
     
     type Mutation {
-        createBook(title: String!, author_id: ID!, score: Float!, isPublished: Boolean): Book!
-        createAuthor(name: String!, surname: String!, age: Int!): Author!
+        createBook(data: CreateBookInput!): Book!
+        createAuthor(data: CreateAuthorInput!): Author!
     }
 `;
 
 const resolvers = {
     Mutation: {
-        createBook: (parent, {title, author_id, score, isPublished}) => {
+        createBook: (parent, {data}) => {
             const book = {
                 id: nanoid(),
-                title,
-                author_id,
-                score,
-                isPublished
+                ...data,
             }
 
             books.push(book);
-
             return book;
         },
-        createAuthor: (parent, {name, surname, age}) => {
+        createAuthor: (parent, {data}) => {
             const author= {
                 id: nanoid(),
-                name,
-                surname,
-                age
+                ...data,
             }
 
             authors.push(author);
@@ -88,10 +89,5 @@ const resolvers = {
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    plugins: [
-        ApolloServerPluginLandingPageGraphQLPlayground({
-            //OPTİONS
-        }),
-    ],
 });
 server.listen().then(({url}) => {console.log(`Apollo serve is up at ${url}`)});
