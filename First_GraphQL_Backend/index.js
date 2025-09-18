@@ -35,6 +35,10 @@ const typeDefs = gql`
         name: String, surname: String, age: Int
     }
 
+    type DeleteAllOutput{
+        count: Int
+    }
+
 
     type Query {
         # Book
@@ -51,10 +55,13 @@ const typeDefs = gql`
         createBook(data: CreateBookInput!): Book!
         updateBook(id: ID!, data: UpdateBookInput!): Book!
         deleteBook(id: ID!): Book!
+        deleteAllBooks: DeleteAllOutput!
 
         # Author
         createAuthor(data: CreateAuthorInput!): Author!
         updateAuthor(id: ID!, data: UpdateAuthorInput!): Author!
+        deleteAuthor(id: ID!): Author!
+        deleteAllAuthors: DeleteAllOutput!
     }
 `;
 
@@ -94,6 +101,12 @@ const resolvers = {
             books.splice(book_index,1);
             return deletedBook;
         },
+        deleteAllBooks: (parent, args) => {
+            const length = books.length;
+            books.splice(0,length);
+
+            return {count: length}
+        },
 
         // Author
         createAuthor: (parent, {data}) => {
@@ -117,7 +130,24 @@ const resolvers = {
                 ...data,
             }
             return updatedAuthor;
-        }
+        },
+        deleteAuthor: (parent, {id}) => {
+            const author_index = authors.findIndex(author => author.id===id);
+
+            if(author_index === -1){
+                throw new Error("Author is not found!");
+            }
+
+            const deletedAuthor = authors[author_index];
+            authors.splice(author_index,1);
+            return deletedAuthor;
+        },
+        deleteAllAuthors: (parent, args) => {
+            const length = authors.length;
+            authors.splice(0,length);
+
+            return {count: length}
+        },
     },
     Query: {
         books: () => books,
