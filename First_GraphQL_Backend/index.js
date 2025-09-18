@@ -1,5 +1,6 @@
 const {ApolloServer , gql} = require("apollo-server");
 const {ApolloServerPluginLandingPageGraphQLPlayground} = require("apollo-server-core");
+const { nanoid } = require("nanoid");
 
 const {books, authors} = require("./data");
 
@@ -27,9 +28,40 @@ const typeDefs = gql`
         authors: [Author!]
         author(id: ID!): Author!
     }
+    
+    type Mutation {
+        createBook(title: String!, author_id: ID!, score: Float!, isPublished: Boolean): Book!
+        createAuthor(name: String!, surname: String!, age: Int!): Author!
+    }
 `;
 
 const resolvers = {
+    Mutation: {
+        createBook: (parent, {title, author_id, score, isPublished}) => {
+            const book = {
+                id: nanoid(),
+                title,
+                author_id,
+                score,
+                isPublished
+            }
+
+            books.push(book);
+
+            return book;
+        },
+        createAuthor: (parent, {name, surname, age}) => {
+            const author= {
+                id: nanoid(),
+                name,
+                surname,
+                age
+            }
+
+            authors.push(author);
+            return author;
+        }
+    },
     Query: {
         books: () => books,
         book: (parent, args) => books.find((book) =>  book.id === args.id),
