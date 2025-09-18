@@ -50,6 +50,7 @@ const typeDefs = gql`
         # Book
         createBook(data: CreateBookInput!): Book!
         updateBook(id: ID!, data: UpdateBookInput!): Book!
+        deleteBook(id: ID!): Book!
 
         # Author
         createAuthor(data: CreateAuthorInput!): Author!
@@ -81,6 +82,17 @@ const resolvers = {
                 ...data,
             }
             return updatedBook;
+        },
+        deleteBook: (parent, {id}) => {
+            const book_index = books.findIndex(book => book.id===id);
+
+            if(book_index===-1){
+                throw new Error("Book is not found!");
+            }
+
+            const deletedBook = books[book_index];
+            books.splice(book_index,1);
+            return deletedBook;
         },
 
         // Author
