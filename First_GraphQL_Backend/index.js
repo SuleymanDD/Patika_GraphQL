@@ -66,6 +66,8 @@ const typeDefs = `
 
     type Subscription{
         bookCreated: Book!
+        bookUpdated: Book!
+        bookDeleted: Book!
     }
 `;
 
@@ -73,6 +75,12 @@ const resolvers = {
     Subscription: {
         bookCreated: {
             subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("bookCreated"),  
+        },
+        bookUpdated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("bookUpdated"),  
+        },
+        bookDeleted: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("bookDeleted"),  
         },
     },
     Mutation: {
@@ -98,6 +106,7 @@ const resolvers = {
                 ...books[book_index],
                 ...data,
             }
+            pubsub.publish("bookUpdated", {bookUpdated: updatedBook});
             return updatedBook;
         },
         deleteBook: (parent, {id}) => {
@@ -109,6 +118,7 @@ const resolvers = {
 
             const deletedBook = books[book_index];
             books.splice(book_index,1);
+            pubsub.publish("bookUpdated", {bookUpdated: deletedBook});
             return deletedBook;
         },
         deleteAllBooks: (parent, args) => {
