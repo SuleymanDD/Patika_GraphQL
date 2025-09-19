@@ -65,14 +65,22 @@ const typeDefs = `
     }
 
     type Subscription{
+        # Book
         bookCreated: Book!
         bookUpdated: Book!
         bookDeleted: Book!
+        bookCount: Int!
+
+        # Author
+        authorCreated: Author!
+        authorUpdated: Author!
+        authorDeleted: Author!
     }
 `;
 
 const resolvers = {
     Subscription: {
+        // Book
         bookCreated: {
             subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("bookCreated"),  
         },
@@ -82,10 +90,29 @@ const resolvers = {
         bookDeleted: {
             subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("bookDeleted"),  
         },
+        bookCount: {
+            subscribe: (_,__,{pubsub}) => {
+                setTimeout(() => {
+                    pubsub.publish("bookCount", {bookCount: books.length})
+                });
+                return pubsub.asyncIterator("bookCount")
+            },
+        },
+
+        // Author
+        authorCreated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("authorCreated"),  
+        },
+        authorUpdated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("authorUpdated"),  
+        },
+        authorDeleted: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("authorDeleted"),  
+        },
     },
     Mutation: {
         // Book
-        createBook: (parent, {data}) => {
+        createBook: (_, {data}, {pubsub}) => {
             const book = {
                 id: nanoid(),
                 ...data,
@@ -93,9 +120,10 @@ const resolvers = {
 
             books.push(book);
             pubsub.publish("bookCreated", {bookCreated: book});
+            pubsub.publish("bookCount", {bookCount: books.length});
             return book;
         },
-        updateBook: (parent, {id, data}) => {
+        updateBook: (_, {id, data}, {pubsub}) => {
             const book_index = books.findIndex((book) => book.id === id);
 
             if(book_index === -1){
@@ -109,7 +137,7 @@ const resolvers = {
             pubsub.publish("bookUpdated", {bookUpdated: updatedBook});
             return updatedBook;
         },
-        deleteBook: (parent, {id}) => {
+        deleteBook: (_, {id}, {pubsub}) => {
             const book_index = books.findIndex(book => book.id===id);
 
             if(book_index===-1){
@@ -118,27 +146,30 @@ const resolvers = {
 
             const deletedBook = books[book_index];
             books.splice(book_index,1);
-            pubsub.publish("bookUpdated", {bookUpdated: deletedBook});
+            pubsub.publish("bookDeleted", {bookDeleted: deletedBook});
+            pubsub.publish("bookCount", {bookCount: books.length});
             return deletedBook;
         },
-        deleteAllBooks: (parent, args) => {
+        deleteAllBooks: (_, __, {pubsub}) => {
             const length = books.length;
             books.splice(0,length);
 
+            pubsub.publish("bookCount", {bookCount: books.length});
             return {count: length}
         },
 
         // Author
-        createAuthor: (parent, {data}) => {
+        createAuthor: (_, {data}, {pubsub}) => {
             const author= {
                 id: nanoid(),
                 ...data,
             }
 
             authors.push(author);
+            pubsub.publish("authorCreated", {authorCreated: author});
             return author;
         },
-        updateAuthor: (parent, {id, data}) => {
+        updateAuthor: (_, {id, data}, {pubsub}) => {
             const author_index = authors.findIndex((author) => author.id === id);
 
             if(author_index === -1){
@@ -149,9 +180,10 @@ const resolvers = {
                 ...authors[author_index],
                 ...data,
             }
+            pubsub.publish("authorUpdated", {authorUpdated: updatedAuthor});
             return updatedAuthor;
         },
-        deleteAuthor: (parent, {id}) => {
+        deleteAuthor: (_, {id}, {pubsub}) => {
             const author_index = authors.findIndex(author => author.id===id);
 
             if(author_index === -1){
@@ -160,9 +192,10 @@ const resolvers = {
 
             const deletedAuthor = authors[author_index];
             authors.splice(author_index,1);
+            pubsub.publish("authorDeleted", {authorDeleted: deletedAuthor});
             return deletedAuthor;
         },
-        deleteAllAuthors: (parent, args) => {
+        deleteAllAuthors: (_, __) => {
             const length = authors.length;
             authors.splice(0,length);
 
