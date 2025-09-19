@@ -1,9 +1,9 @@
-const {ApolloServer , gql} = require("apollo-server");
+const {GraphQLServer, PubSub} = require("graphql-yoga");
 const { nanoid } = require("nanoid");
 
 const {books, authors} = require("./data");
 
-const typeDefs = gql`
+const typeDefs = `
     type Book {
         id: ID!
         title: String!
@@ -63,9 +63,18 @@ const typeDefs = gql`
         deleteAuthor(id: ID!): Author!
         deleteAllAuthors: DeleteAllOutput!
     }
+
+    type Subscription{
+        bookCreated: Book!
+    }
 `;
 
 const resolvers = {
+    Subscription: {
+        bookCreated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("bookCreated"),  
+        },
+    },
     Mutation: {
         // Book
         createBook: (parent, {data}) => {
@@ -75,6 +84,7 @@ const resolvers = {
             }
 
             books.push(book);
+            pubsub.publish("bookCreated", {bookCreated: book});
             return book;
         },
         updateBook: (parent, {id, data}) => {
@@ -172,8 +182,7 @@ const resolvers = {
     },
 };
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-});
-server.listen().then(({url}) => {console.log(`Apollo serve is up at ${url}`)});
+const pubsub = new PubSub();
+const server = new GraphQLServer({typeDefs, resolvers, context: {pubsub}});
+
+server.start(() =>console.log(`Server is started on localhost:4000`) )
