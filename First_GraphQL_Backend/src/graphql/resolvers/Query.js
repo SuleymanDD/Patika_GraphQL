@@ -6,4 +6,4 @@ const Query = {
     author: (_, args,{db}) => db.authors.find((author) => author.id === args.id),
 }
 
-module.exports= Query;
+module.exports.Query = Query;

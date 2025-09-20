@@ -10,4 +10,4 @@ const Author = {
     }
 }
 
-module.exports = Author;
+module.exports.Author = Author;

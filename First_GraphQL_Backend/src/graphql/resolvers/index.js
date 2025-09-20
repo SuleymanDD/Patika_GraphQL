@@ -1,13 +1,15 @@
-const Query = require("./Query");
-const Mutation = require("./Mutation");
-const Subscription = require("./Subscription");
-const Book = require("./Book");
-const Author = require("./Author");
-
-module.exports = {
-    Query,
-    Mutation,
-    Subscription,
-    Book,
-    Author
-}
+const path = require('path')
+const { loadFilesSync } = require('@graphql-tools/load-files')
+const { mergeResolvers } = require('@graphql-tools/merge')
+ 
+const resolversArray = loadFilesSync(path.join(__dirname), {
+    extensions: ["js"],
+    extractExports: (fileExport) => {
+        if(typeof fileExport === "function"){
+            return fileExport("query_root");
+        }
+        return fileExport;
+    }
+});
+ 
+module.exports = mergeResolvers(resolversArray)

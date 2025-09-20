@@ -93,4 +93,4 @@ const Mutation = {
     },
 }
 
-module.exports = Mutation;
+module.exports.Mutation = Mutation;

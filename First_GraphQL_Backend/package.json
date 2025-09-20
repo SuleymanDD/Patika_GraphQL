@@ -12,11 +12,16 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@graphql-tools/load-files": "^7.0.1",
+    "@graphql-tools/merge": "^9.1.1",
     "graphql-redis-subscriptions": "^1.5.0",
-    "graphql-yoga": "^1.18.3",
+    "graphql-subscriptions": "^3.0.0",
+    "graphql-ws": "^6.0.6",
+    "graphql-yoga": "^5.16.0",
     "ioredis": "^5.7.0",
     "nanoid": "^5.1.5",
-    "redis-cli": "^2.1.2"
+    "redis-cli": "^2.1.2",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "dotenv": "^17.2.2",

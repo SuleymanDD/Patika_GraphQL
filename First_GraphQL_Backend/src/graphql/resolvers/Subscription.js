@@ -1,4 +1,4 @@
-const {withFilter} = require("graphql-yoga");
+const {withFilter} = require("graphql-subscriptions");
 
 const Subscription = {
     // Book
@@ -37,4 +37,4 @@ const Subscription = {
     },
 }
 
-module.exports = Subscription;
+module.exports.Subscription = Subscription;

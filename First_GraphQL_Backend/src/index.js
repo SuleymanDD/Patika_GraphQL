@@ -1,14 +1,43 @@
-const {GraphQLServer} = require("graphql-yoga");
+const { createYoga, createSchema } = require("graphql-yoga");
+const { createServer } = require("http");
+const { useServer } = require("graphql-ws/use/ws");
+const { WebSocketServer } = require("ws");
+
 const pubsub = require("./pubsub");
 const resolvers = require("./graphql/resolvers");
 const db = require("./data");
+const typeDefs = require("./graphql/type-defs");
 
-const server = new GraphQLServer({
-    typeDefs: `${__dirname}/graphql/schema.graphql`, 
-    resolvers, 
-    context: {
-        pubsub,
-        db,
-    }
+const schema = createSchema({
+  typeDefs,
+  resolvers,
 });
-server.start(() =>console.log(`Server is started on localhost:4000`) )
+
+const yoga = createYoga({
+  graphqlEndpoint: "/",
+  schema,
+  context: {
+    pubsub,
+    db,
+  },
+});
+
+const httpServer = createServer(yoga);
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: yoga.graphqlEndpoint,
+});
+
+useServer(
+  {
+    schema,
+    context: async (ctx) => {
+      return { pubsub, db };
+    },
+  },
+  wsServer
+);
+
+httpServer.listen(4000, () => {
+  console.info("Sunucu http://localhost:4000 adresinde çalışıyor.");
+});
