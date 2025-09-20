@@ -1,4 +1,4 @@
-const Author = {
+export const Author = {
     books: (parent, args, {db}) => {
         let filtered = db.books.filter((book) => book.author_id === parent.id);
 
@@ -9,5 +9,3 @@ const Author = {
         return filtered;
     }
 }
-
-module.exports.Author = Author;

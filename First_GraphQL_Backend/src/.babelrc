@@ -1,0 +1,12 @@
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    ["module-resolver", {
+      "root": ["./src"],
+      "alias": {
+        "@resolvers": "./src/graphql/resolvers",
+        "@type-defs": "./src/graphql/type-defs"
+      }
+    }]
+  ]
+}

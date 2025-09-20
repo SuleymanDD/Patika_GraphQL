@@ -1,12 +1,12 @@
-const { createYoga, createSchema } = require("graphql-yoga");
-const { createServer } = require("http");
-const { useServer } = require("graphql-ws/use/ws");
-const { WebSocketServer } = require("ws");
+import { createYoga, createSchema } from "graphql-yoga"
+import { createServer } from "http";
+import { useServer } from "graphql-ws/use/ws";
+import { WebSocketServer } from "ws";
 
-const pubsub = require("./pubsub");
-const resolvers = require("./graphql/resolvers");
-const db = require("./data");
-const typeDefs = require("./graphql/type-defs");
+import pubsub from "./pubsub";
+import resolvers from "@resolvers";
+import db from "./data";
+import typeDefs from "@type-defs";
 
 const schema = createSchema({
   typeDefs,
