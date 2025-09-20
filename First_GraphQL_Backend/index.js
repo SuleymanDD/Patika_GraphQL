@@ -1,5 +1,6 @@
 const {GraphQLServer, PubSub, withFilter} = require("graphql-yoga");
 const { nanoid } = require("nanoid");
+const pubsub = require("./pubsub");
 
 const {books, authors} = require("./data");
 
@@ -230,7 +231,6 @@ const resolvers = {
     },
 };
 
-const pubsub = new PubSub();
 const server = new GraphQLServer({typeDefs, resolvers, context: {pubsub}});
 
 server.start(() =>console.log(`Server is started on localhost:4000`) )
