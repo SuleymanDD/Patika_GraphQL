@@ -1,9 +1,9 @@
-const {ApolloServer , gql} = require("apollo-server");
+const {GraphQLServer, PubSub} = require("graphql-yoga");
 const {nanoid} = require("nanoid");
 
 const {events, locations, users, participants} = require("./data");
 
-const typeDefs = gql`
+const typeDefs = `
     type Event {
         id: ID!
         title: String!
@@ -113,20 +113,47 @@ const typeDefs = gql`
         deleteParticipant(id: ID!): Participant!
         deleteAllParticipants: DeleteAllData!
     }
+    
+    type Subscription {
+        # User
+        userCreated: User!
+
+        # Event
+        eventCreated: Event!
+        # Participant
+        participantCreated: Participant!
+    }
 `;
 
 const resolvers = {
+    Subscription: {
+        // User
+        userCreated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("userCreated"),
+        },
+
+        // Event
+        eventCreated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("eventCreated"),
+        },
+
+        // Participant
+        participantCreated: {
+            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("participantCreated"),
+        },
+    },
     Mutation: {
         // Event
-        createEvent: (parent, {data}) => {
+        createEvent: (_, {data}, {pubsub}) => {
             const createdEvent = {
                 id:nanoid(),
                 ...data,
             }
             events.push(createdEvent);
+            pubsub.publish("eventCreated",{eventCreated: createdEvent});
             return createdEvent;
         },
-        updateEvent: (parent, {id, data}) => {
+        updateEvent: (_, {id, data}) => {
             const event_index = events.findIndex(event => event.id == id);
             if(event_index===-1){
                 throw new Error("Event is not found!");
@@ -138,7 +165,7 @@ const resolvers = {
             }
             return updatedEvent;
         },
-        deleteEvent: (parent, {id}) => {
+        deleteEvent: (_, {id}) => {
             const event_index = events.findIndex(event => event.id== id);
             if(event_index===-1){
                 throw new Error("Event is not found!");
@@ -148,7 +175,7 @@ const resolvers = {
             events.splice(event_index,1);
             return deletedEvent;
         },
-        deleteAllEvents: (parent, args) => {
+        deleteAllEvents: (_, __) => {
             const length= events.length;
             events.splice(0,length);
             return{
@@ -157,7 +184,7 @@ const resolvers = {
         },
 
         // Location
-        createLocation: (parent, {data}) => {
+        createLocation: (_, {data}) => {
             const createdLocation = {
                 id:nanoid(),
                 ...data,
@@ -165,7 +192,7 @@ const resolvers = {
             locations.push(createdLocation);
             return createdLocation;
         },
-        updateLocation: (parent, {id, data}) => {
+        updateLocation: (_, {id, data}) => {
             const location_index = locations.findIndex(location => location.id == id);
             if(location_index===-1){
                 throw new Error("Location is not found!");
@@ -177,7 +204,7 @@ const resolvers = {
             }
             return updatedLocation;
         },
-        deleteLocation: (parent, {id}) => {
+        deleteLocation: (_, {id}) => {
             const location_index = locations.findIndex(location => location.id== id);
             if(location_index===-1){
                 throw new Error("Location is not found!");
@@ -187,7 +214,7 @@ const resolvers = {
             locations.splice(location_index,1);
             return deletedLocation;
         },
-        deleteAllLocations: (parent, args) => {
+        deleteAllLocations: (_, __) => {
             const length= locations.length;
             locations.splice(0,length);
             return{
@@ -196,15 +223,16 @@ const resolvers = {
         },
 
         // User
-        createUser: (parent, {data}) => {
+        createUser: (_, {data}, {pubsub}) => {
             const createdUser = {
                 id:nanoid(),
                 ...data,
             }
             users.push(createdUser);
+            pubsub.publish("userCreated",{userCreated: createdUser});
             return createdUser;
         },
-        updateUser: (parent, {id, data}) => {
+        updateUser: (_, {id, data}) => {
             const user_index = users.findIndex(user => user.id == id);
             if(user_index===-1){
                 throw new Error("User is not found!");
@@ -216,7 +244,7 @@ const resolvers = {
             }
             return updatedUser;
         },
-        deleteUser: (parent, {id}) => {
+        deleteUser: (_, {id}) => {
             const user_index = users.findIndex(user => user.id== id);
             if(user_index===-1){
                 throw new Error("User is not found!");
@@ -226,7 +254,7 @@ const resolvers = {
             users.splice(user_index,1);
             return deletedUser;
         },
-        deleteAllUsers: (parent, args) => {
+        deleteAllUsers: (_, __) => {
             const length= users.length;
             users.splice(0,length);
             return{
@@ -235,15 +263,16 @@ const resolvers = {
         },
 
         // Participant
-        createParticipant: (parent, {data}) => {
+        createParticipant: (_, {data},{pubsub}) => {
             const createdParticipant = {
                 id:nanoid(),
                 ...data,
             }
             participants.push(createdParticipant);
+            pubsub.publish("participantCreated",{participantCreated: createdParticipant})
             return createdParticipant;
         },
-        updateParticipant: (parent, {id, data}) => {
+        updateParticipant: (_, {id, data}) => {
             const participant_index = participants.findIndex(participant => participant.id == id);
             if(participant_index===-1){
                 throw new Error("Participant is not found!");
@@ -255,7 +284,7 @@ const resolvers = {
             }
             return updatedParticipant;
         },
-        deleteParticipant: (parent, {id}) => {
+        deleteParticipant: (_, {id}) => {
             const participant_index = participants.findIndex(participant => participant.id== id);
             if(participant_index===-1){
                 throw new Error("Participant is not found!");
@@ -265,7 +294,7 @@ const resolvers = {
             participants.splice(participant_index,1);
             return deletedParticipant;
         },
-        deleteAllParticipants: (parent, args) => {
+        deleteAllParticipants: (_, __) => {
             const length= participants.length;
             participants.splice(0,length);
             return{
@@ -292,9 +321,7 @@ const resolvers = {
         location: (parent) => locations.find((location) => location.id == parent.location_id),
     },
 };
+const pubsub = new PubSub();
+const server = new GraphQLServer({typeDefs, resolvers, context: {pubsub}});
 
-const server = new ApolloServer({
-    typeDefs,
-    resolvers,
-});
-server.listen().then(({url}) => console.log(`Appolo server is working at ${url}`));
+server.start(() =>console.log(`Server is started on localhost:4000`) )

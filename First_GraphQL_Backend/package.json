@@ -15,7 +15,8 @@
     "graphql-redis-subscriptions": "^1.5.0",
     "graphql-yoga": "^1.18.3",
     "ioredis": "^5.7.0",
-    "nanoid": "^5.1.5"
+    "nanoid": "^5.1.5",
+    "redis-cli": "^2.1.2"
   },
   "devDependencies": {
     "dotenv": "^17.2.2",
