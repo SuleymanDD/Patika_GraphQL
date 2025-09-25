@@ -1,38 +1,49 @@
 import {withFilter} from "graphql-subscriptions";
 
 export const Subscription = {
-    // Book
-    bookCreated: {
+    // Post
+    postCreated: {
         subscribe: withFilter(
-            (_, __, { pubsub }) => pubsub.asyncIterator("bookCreated"),
+            (_, __, { pubsub }) => pubsub.asyncIterator("postCreated"),
             (payload, variables) => {
-                return variables.author_id ? (payload.bookCreated.author_id === variables.author_id) : true;
+                return variables.user_id ? (payload.postCreated.user_id === variables.user_id) : true;
             }
         )
     },
-    bookUpdated: {
-        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("bookUpdated"),
+    postUpdated: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("postUpdated"),
     },
-    bookDeleted: {
-        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("bookDeleted"),
+    postDeleted: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("postDeleted"),
     },
-    bookCount: {
+    postCount: {
         subscribe: (_, __, { pubsub, db }) => {
             setTimeout(() => {
-                pubsub.publish("bookCount", { bookCount: db.books.length })
+                pubsub.publish("postCount", { postCount: db.posts.length })
             });
-            return pubsub.asyncIterator("bookCount")
+            return pubsub.asyncIterator("postCount")
         },
     },
 
-    // Author
-    authorCreated: {
-        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("authorCreated"),
+    // User
+    userCreated: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("userCreated"),
     },
-    authorUpdated: {
-        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("authorUpdated"),
+    userUpdated: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("userUpdated"),
     },
-    authorDeleted: {
-        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("authorDeleted"),
+    userDeleted: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("userDeleted"),
+    },
+
+    // Comment
+    commentCreated: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("commentCreated"),
+    },
+    commentUpdated: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("commentUpdated"),
+    },
+    commentDeleted: {
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("commentDeleted"),
     },
 }

@@ -1,7 +1,10 @@
 export const Query = {
-    books: (_,__,{db}) => db.books,
-    book: (_, args,{db}) => db.books.find((book) => book.id === args.id),
+    posts: (_,__,{db}) => db.posts,
+    post: (_, args,{db}) => db.posts.find((post) => post.id === args.id),
 
-    authors: (_,__,{db}) => db.authors,
-    author: (_, args,{db}) => db.authors.find((author) => author.id === args.id),
+    users: (_,__,{db}) => db.users,
+    user: (_, args,{db}) => db.users.find((user) => user.id === args.id),
+
+    comments: (_,__,{db}) => db.comments,
+    comment: (_, args,{db}) => db.comments.find((comment) => comment.id === args.id),
 }

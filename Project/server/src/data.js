@@ -1,37 +1,48 @@
-const authors = [
+const users = [
     {
         id: "1",
-        name: "Ahmed",
-        surname: "Mitrovic",
-        age: 21,
+        fullName: "Kenan Yıldız",
     },
     {
         id: "2",
-        name: "Kerem",
-        surname: "Muhsin",
-        age: 54,
+        fullName: "Kerem Aktürkoğlu"
     },
-]
+];
 
-const books = [
+const posts = [
     {
         id: "1",
-        title: "Şeker Portakalı",
-        author_id: "1",
-        score: 9,
-        isPublished: true
+        title: "Pasetur Lemas",
+        description: "Lorem isajsf tdgdas",
+        user_id: "1",
     },
     {
         id: "2",
         title: "Terma Ela",
-        author_id: "2",
-        score: 2.5,
-        isPublished: false
+        description: "Lorem isajsf tdgdas",
+        user_id: "2",
     }
 
 ];
 
+const comments = [
+    {
+        id: "1",
+        text: "Kes lan",
+        post_id: "2",
+        user_id: "1",
+    },
+    {
+        id: "2",
+        text: "Mal la bu",
+        post_id: "1",
+        user_id: "2",
+    },
+
+];
+
 export default {
-    authors,
-    books,
+    users,
+    posts,
+    comments,
 }
