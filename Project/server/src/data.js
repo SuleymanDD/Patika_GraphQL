@@ -19,12 +19,14 @@ const posts = [
         title: "Pasetur Lemas",
         description: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
         user_id: "1",
+        cover: "https://images.unsplash.com/photo-1755918909925-f62b86d93c2a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     },
     {
         id: "2",
         title: "Terma Ela",
         description: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. ",
         user_id: "2",
+        cover: "https://images.unsplash.com/photo-1756310362993-894a1868c34d?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     }
 
 ];
