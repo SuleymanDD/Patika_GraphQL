@@ -23,7 +23,7 @@ type Post {
     description: String!
     user_id: ID!
     user: User
-    # comments: [Comment!]!
+    comments: [Comment!]!
 }
 
 input CreatePostInput{
