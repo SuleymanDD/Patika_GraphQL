@@ -8,7 +8,7 @@ export const Mutation = {
             ...data,
         }
 
-        db.posts.push(post);
+        db.posts.unshift(post);
         pubsub.publish("postCreated", { postCreated: post });
         pubsub.publish("postCount", { postCount: db.posts.length });
         return post;
