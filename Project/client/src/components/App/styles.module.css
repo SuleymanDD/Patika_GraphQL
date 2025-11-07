@@ -7,14 +7,6 @@
     /*margin: 24px;*/
     border: solid 4px bisque;
 }
-.headerMenu{
-    background: none;
-    border: none;
-}
-.menuItem{
-    font-weight: bold;
-    font-size: 16px;
-}
 .col{
     margin: 10px 0 30px 0;
 }

@@ -23,6 +23,8 @@ function Home() {
     });
   },[subscribeToMore]);
   
+
+  
   if(loading){
     return <Loading />
   }
