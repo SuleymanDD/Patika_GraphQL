@@ -11,3 +11,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+.ant-list-split .ant-list-item {
+    border: 2px solid rgba(5, 5, 5, 0.06);
+    margin: 5px;
+    padding: 10px;
+}
+.ant-list-split .ant-list-item:last-child{
+  border-block-end: 2px solid rgba(5, 5, 5, 0.06);
+}
+a{
+  color:black;
+}
+a:hover{
+  color:gray;
+}
+.ant-list .ant-list-item .ant-list-item-meta .ant-list-item-meta-title >a:hover{
+  color:gray;
+}
+.ant-typography+h3.ant-typography{
+  margin-top:auto;
+}

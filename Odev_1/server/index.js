@@ -57,6 +57,7 @@ const typeDefs = `
         id: ID!
         user_id: ID!
         event_id: ID!
+        user: User
     }
 
     input CreateParticipantInput{
@@ -120,6 +121,7 @@ const typeDefs = `
 
         # Event
         eventCreated: Event!
+
         # Participant
         participantCreated: Participant!
     }
@@ -319,6 +321,9 @@ const resolvers = {
         user: (parent) => users.find((user) => user.id == parent.user_id),
         participants: (parent) => participants.filter((participant) => participant.event_id == parent.id),
         location: (parent) => locations.find((location) => location.id == parent.location_id),
+    },
+    Participant: {
+        user: (parent) => users.find((user) => user.id == parent.user_id)
     },
 };
 const pubsub = new PubSub();

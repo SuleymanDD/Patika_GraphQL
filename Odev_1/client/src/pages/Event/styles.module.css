@@ -1,0 +1,12 @@
+.titleDiv{
+    display: flex;
+    justify-content: space-between;
+}
+.imageDiv{
+    display: flex;
+    justify-content: center;
+}
+.tag{
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
