@@ -2,17 +2,37 @@ import React, { useEffect } from "react";
 import { Divider, Button } from "antd"
 import styles from "./styles.module.css"
 import { useLazyQuery } from "@apollo/client/react";
-import { GET_POST_COMMENTS } from "./queries"
+import { COMMENT_SUBSCRIPTION, GET_POST_COMMENTS } from "./queries"
 import { Avatar, List } from 'antd';
 
 let comment_datas = "";
 let btnIsVisible=true;
 function Comments({ post_id }) {
-    const [loadComments, { loading }] = useLazyQuery(GET_POST_COMMENTS);
+    const [loadComments, { loading, called, subscribeToMore}] = useLazyQuery(GET_POST_COMMENTS);
     
     useEffect(() => {
         btnIsVisible=true;
     },[post_id]);
+
+    useEffect(() => {
+        if(!loading && called){
+            subscribeToMore({
+                document: COMMENT_SUBSCRIPTION,
+                updateQuery: (prev, {subscriptionData}) => {
+                    if(!subscriptionData.data) return prev;
+
+                    const newCommentItem = subscriptionData.data.commentCreated;
+
+                    return {
+                        post:{
+                            ...prev.post,
+                            comments: [...prev.post.comments, newCommentItem]
+                        }
+                    }
+                }
+            })
+        }
+    },[loading, called, subscribeToMore]);
 
     return (
         <>

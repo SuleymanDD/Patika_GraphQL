@@ -11,7 +11,7 @@ type Mutation {
 }
 
 type Subscription{
-    commentCreated: Comment!
+    commentCreated(post_id: ID!): Comment!
     commentUpdated: Comment!
     commentDeleted: Comment!
 }

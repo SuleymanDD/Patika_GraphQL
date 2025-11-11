@@ -25,3 +25,16 @@ export const GET_POST_COMMENTS = gql`
   }
 }
 `;
+
+export const COMMENT_SUBSCRIPTION = gql`
+  subscription getCommentCreated{
+    commentCreated(post_id: "1") {
+      id
+      text
+      user {
+        fullName
+        profile_photo
+      }
+    }
+}
+`;
