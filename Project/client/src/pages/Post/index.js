@@ -32,7 +32,7 @@ function Post() {
         <Title level={3}>{post.title}</Title>
         <Image src={post.cover}/>
         <div className={styles.description}>{post.description}</div>
-        <Comments post_id={id}/>
+        <Comments postId={id}/>
         </div>
     );
 }

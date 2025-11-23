@@ -3,12 +3,7 @@ import { withFilter } from "graphql-subscriptions";
 export const Subscription = {
     // Post
     postCreated: {
-        subscribe: withFilter(
-            (_, __, { pubsub }) => pubsub.asyncIterator("postCreated"),
-            (payload, variables) => {
-                return variables.user_id ? (payload.postCreated.user_id === variables.user_id) : true;
-            }
-        )
+        subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("postCreated"),
     },
     postUpdated: {
         subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("postUpdated"),
@@ -38,12 +33,12 @@ export const Subscription = {
 
     // Comment
     commentCreated: {
-        subscribe: withFilter(
+        subscribe:withFilter(
             (_, __, { pubsub }) => pubsub.asyncIterator("commentCreated"),
             (payload, variables) => {
                 return variables.post_id ? (payload.commentCreated.post_id === variables.post_id) : true;
-            }
-        )
+            },
+        ) 
     },
     commentUpdated: {
         subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("commentUpdated"),

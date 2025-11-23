@@ -1,6 +1,6 @@
 type Query {
     posts: [Post!]
-    post(id: ID!): Post!
+    post(id: ID): Post
 }
 
 type Mutation {
@@ -11,7 +11,7 @@ type Mutation {
 }
 
 type Subscription{
-    postCreated(user_id: ID!): Post!
+    postCreated: Post
     postUpdated: Post!
     postDeleted: Post!
     postCount: Int!
