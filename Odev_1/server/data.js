@@ -249,7 +249,7 @@ const events = [
       "location_id": 12,
       "user_id": 12
     }
-]
+];
 
 const locations = [
     {
@@ -427,7 +427,7 @@ const locations = [
       "lat": -44.9507,
       "lng": -170.9158
     }
-]
+];
 
 const users = [
     {
@@ -555,7 +555,7 @@ const users = [
       "username": "Fig2",
       "email": "fig2@gmail.com"
     }
-]
+];
 
 const participants = [
     {
@@ -808,11 +808,11 @@ const participants = [
       "user_id": 12,
       "event_id": 12
     }
-]
+];
 
-module.exports = {
-    events,
-    locations,
-    users,
-    participants
+export default {
+  events,
+  locations,
+  users,
+  participants
 }

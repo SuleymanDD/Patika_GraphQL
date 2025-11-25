@@ -1,7 +1,13 @@
-const {GraphQLServer, PubSub} = require("graphql-yoga");
-const {nanoid} = require("nanoid");
+import { createYoga, createSchema } from "graphql-yoga"
+import { createServer } from "http";
+import { useServer } from "graphql-ws/use/ws";
+import { WebSocketServer } from "ws";
+import {nanoid} from "nanoid";
+import { withFilter } from "graphql-subscriptions";
 
-const {events, locations, users, participants} = require("./data");
+import db from "./data.js";
+import pubsub from "./pubsub.js"
+
 
 const typeDefs = `
     type Event {
@@ -19,7 +25,7 @@ const typeDefs = `
     }
 
     input CreateEventInput{
-        title: String!, desc: String!, date: String!, from: String!, to: String!, location_id: ID!, user_id: ID!
+        title: String, desc: String, date: String, from: String, to: String, location_id: ID, user_id: ID
     }
     input UpdateEventInput{
         title: String, desc: String, date: String, from: String, to: String, location_id: ID, user_id: ID
@@ -61,7 +67,7 @@ const typeDefs = `
     }
 
     input CreateParticipantInput{
-        user_id: ID!, event_id: ID!
+        user_id: ID, event_id: ID
     }
     input UpdateParticipantInput{
         user_id: ID, event_id: ID
@@ -120,10 +126,10 @@ const typeDefs = `
         userCreated: User!
 
         # Event
-        eventCreated: Event!
+        eventCreated: Event
 
         # Participant
-        participantCreated: Participant!
+        participantCreated(event_id: ID!): Participant
     }
 `;
 
@@ -141,192 +147,227 @@ const resolvers = {
 
         // Participant
         participantCreated: {
-            subscribe: (_,__,{pubsub}) => pubsub.asyncIterator("participantCreated"),
+            subscribe:withFilter (
+                (_,__,{pubsub}) => pubsub.asyncIterator("participantCreated"),
+                (payload, variables) => {
+                    return variables.event_id ? (payload.participantCreated.event_id === variables.event_id) : true;
+                }
+            )
         },
     },
     Mutation: {
         // Event
-        createEvent: (_, {data}, {pubsub}) => {
+        createEvent: (_, {data}, {pubsub, db}) => {
             const createdEvent = {
                 id:nanoid(),
                 ...data,
             }
-            events.push(createdEvent);
+            db.events.push(createdEvent);
             pubsub.publish("eventCreated",{eventCreated: createdEvent});
             return createdEvent;
         },
-        updateEvent: (_, {id, data}) => {
-            const event_index = events.findIndex(event => event.id == id);
+        updateEvent: (_, {id, data}, {db}) => {
+            const event_index = db.events.findIndex(event => event.id == id);
             if(event_index===-1){
                 throw new Error("Event is not found!");
             }
 
             const updatedEvent = {
-                ...events[event_index],
+                ...db.events[event_index],
                 ...data,
             }
             return updatedEvent;
         },
-        deleteEvent: (_, {id}) => {
-            const event_index = events.findIndex(event => event.id== id);
+        deleteEvent: (_, {id}, {db}) => {
+            const event_index = db.events.findIndex(event => event.id== id);
             if(event_index===-1){
                 throw new Error("Event is not found!");
             }
 
-            const deletedEvent = events[event_index];
-            events.splice(event_index,1);
+            const deletedEvent = db.events[event_index];
+            db.events.splice(event_index,1);
             return deletedEvent;
         },
-        deleteAllEvents: (_, __) => {
-            const length= events.length;
-            events.splice(0,length);
+        deleteAllEvents: (_, __, {db}) => {
+            const length= db.events.length;
+            db.events.splice(0,length);
             return{
                 count: length
             }
         },
 
         // Location
-        createLocation: (_, {data}) => {
+        createLocation: (_, {data}, {db}) => {
             const createdLocation = {
                 id:nanoid(),
                 ...data,
             }
-            locations.push(createdLocation);
+            db.locations.push(createdLocation);
             return createdLocation;
         },
-        updateLocation: (_, {id, data}) => {
-            const location_index = locations.findIndex(location => location.id == id);
+        updateLocation: (_, {id, data}, {db}) => {
+            const location_index = db.locations.findIndex(location => location.id == id);
             if(location_index===-1){
                 throw new Error("Location is not found!");
             }
 
             const updatedLocation = {
-                ...locations[location_index],
+                ...db.locations[location_index],
                 ...data,
             }
             return updatedLocation;
         },
-        deleteLocation: (_, {id}) => {
-            const location_index = locations.findIndex(location => location.id== id);
+        deleteLocation: (_, {id}, {db}) => {
+            const location_index = db.locations.findIndex(location => location.id== id);
             if(location_index===-1){
                 throw new Error("Location is not found!");
             }
 
-            const deletedLocation = locations[location_index];
-            locations.splice(location_index,1);
+            const deletedLocation = db.locations[location_index];
+            db.locations.splice(location_index,1);
             return deletedLocation;
         },
-        deleteAllLocations: (_, __) => {
-            const length= locations.length;
-            locations.splice(0,length);
+        deleteAllLocations: (_, __, {db}) => {
+            const length= db.locations.length;
+            db.locations.splice(0,length);
             return{
                 count: length
             }
         },
 
         // User
-        createUser: (_, {data}, {pubsub}) => {
+        createUser: (_, {data}, {pubsub, db}) => {
             const createdUser = {
                 id:nanoid(),
                 ...data,
             }
-            users.push(createdUser);
+            db.users.push(createdUser);
             pubsub.publish("userCreated",{userCreated: createdUser});
             return createdUser;
         },
-        updateUser: (_, {id, data}) => {
-            const user_index = users.findIndex(user => user.id == id);
+        updateUser: (_, {id, data}, {db}) => {
+            const user_index = db.users.findIndex(user => user.id == id);
             if(user_index===-1){
                 throw new Error("User is not found!");
             }
 
             const updatedUser = {
-                ...users[user_index],
+                ...db.users[user_index],
                 ...data,
             }
             return updatedUser;
         },
-        deleteUser: (_, {id}) => {
-            const user_index = users.findIndex(user => user.id== id);
+        deleteUser: (_, {id}, {db}) => {
+            const user_index = db.users.findIndex(user => user.id== id);
             if(user_index===-1){
                 throw new Error("User is not found!");
             }
 
-            const deletedUser = users[user_index];
-            users.splice(user_index,1);
+            const deletedUser = db.users[user_index];
+            db.users.splice(user_index,1);
             return deletedUser;
         },
-        deleteAllUsers: (_, __) => {
-            const length= users.length;
-            users.splice(0,length);
+        deleteAllUsers: (_, __, {db}) => {
+            const length= db.users.length;
+            db.users.splice(0,length);
             return{
                 count: length
             }
         },
 
         // Participant
-        createParticipant: (_, {data},{pubsub}) => {
+        createParticipant: (_, {data},{pubsub, db}) => {
             const createdParticipant = {
                 id:nanoid(),
                 ...data,
             }
-            participants.push(createdParticipant);
+            db.participants.push(createdParticipant);
             pubsub.publish("participantCreated",{participantCreated: createdParticipant})
             return createdParticipant;
         },
-        updateParticipant: (_, {id, data}) => {
-            const participant_index = participants.findIndex(participant => participant.id == id);
+        updateParticipant: (_, {id, data}, {db}) => {
+            const participant_index = db.participants.findIndex(participant => participant.id == id);
             if(participant_index===-1){
                 throw new Error("Participant is not found!");
             }
 
             const updatedParticipant = {
-                ...participants[participant_index],
+                ...db.participants[participant_index],
                 ...data,
             }
             return updatedParticipant;
         },
-        deleteParticipant: (_, {id}) => {
-            const participant_index = participants.findIndex(participant => participant.id== id);
+        deleteParticipant: (_, {id}, {db}) => {
+            const participant_index = db.participants.findIndex(participant => participant.id== id);
             if(participant_index===-1){
                 throw new Error("Participant is not found!");
             }
 
-            const deletedParticipant = participants[participant_index];
-            participants.splice(participant_index,1);
+            const deletedParticipant = db.participants[participant_index];
+            db.participants.splice(participant_index,1);
             return deletedParticipant;
         },
-        deleteAllParticipants: (_, __) => {
-            const length= participants.length;
-            participants.splice(0,length);
+        deleteAllParticipants: (_, __, {db}) => {
+            const length= db.participants.length;
+            db.participants.splice(0,length);
             return{
                 count: length
             }
         },
     },
     Query: {
-        events: () => events,
-        event: (parent,args) => events.find((event)=> event.id == args.id),
+        events: (_, __, {db}) => db.events,
+        event: (_,args, {db}) => db.events.find((event)=> event.id == args.id),
 
-        locations: () => locations,
-        location: (parent,args) => locations.find((location)=> location.id == args.id),
+        locations: (_, __, {db}) => db.locations,
+        location: (_,args, {db}) => db.locations.find((location)=> location.id == args.id),
 
-        users: () => users,
-        user: (parent,args) => users.find((user)=> user.id == args.id),
+        users: (_, __, {db}) => db.users,
+        user: (_,args, {db}) => db.users.find((user)=> user.id == args.id),
 
-        participants: () => participants,
-        participant: (parent,args) => participants.find((participant)=> participant.id == args.id),
+        participants: (_, __, {db}) => db.participants,
+        participant: (_,args, {db}) => db.participants.find((participant)=> participant.id == args.id),
     },
     Event: {
-        user: (parent) => users.find((user) => user.id == parent.user_id),
-        participants: (parent) => participants.filter((participant) => participant.event_id == parent.id),
-        location: (parent) => locations.find((location) => location.id == parent.location_id),
+        user: (parent, __, {db}) => db.users.find((user) => user.id == parent.user_id),
+        participants: (parent, __, {db}) => db.participants.filter((participant) => participant.event_id == parent.id),
+        location: (parent, __, {db}) => db.locations.find((location) => location.id == parent.location_id),
     },
     Participant: {
-        user: (parent) => users.find((user) => user.id == parent.user_id)
+        user: (parent, __, {db}) => db.users.find((user) => user.id == parent.user_id)
     },
 };
-const pubsub = new PubSub();
-const server = new GraphQLServer({typeDefs, resolvers, context: {pubsub}});
 
-server.start(() =>console.log(`Server is started on localhost:4000`) )
+const schema = createSchema({
+  typeDefs,
+  resolvers,
+});
+
+const yoga = createYoga({
+  graphqlEndpoint: "/",
+  schema,
+  context: {
+    pubsub,
+    db,
+  },
+});
+
+const httpServer = createServer(yoga);
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: yoga.graphqlEndpoint,
+});
+
+useServer(
+  {
+    schema,
+    context: async (ctx) => {
+      return { pubsub, db };
+    },
+  },
+  wsServer
+);
+
+httpServer.listen(4000, () => {
+  console.info("Sunucu http://localhost:4000 adresinde çalışıyor.");
+});

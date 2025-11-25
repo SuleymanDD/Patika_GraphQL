@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const GET_EVENT = gql`
-query getEvent($id: ID!){
+query($id: ID!){
   event(id: $id) {
     title
     desc
@@ -15,6 +15,16 @@ query getEvent($id: ID!){
       user{
         username
       }
+    }
+  }
+}
+`;
+
+export const PARTİCİPANTS_SUBSCRIPTION = gql`
+  subscription($eventId: ID!){
+  participantCreated(event_id: $eventId) {
+    user {
+      username
     }
   }
 }

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@apollo/client/react";
 import { useParams } from "react-router-dom";
-import { GET_EVENT } from "./queries";
+import { GET_EVENT, PARTİCİPANTS_SUBSCRIPTION } from "./queries";
 import Loading from "components/Loading";
 import { Typography, Image, Tag } from 'antd';
 import styles from "./styles.module.css"
@@ -10,9 +10,28 @@ const { Title } = Typography;
 const colors = ["red", "magenta", "volcano", "orange", "gold", "lime", "green", "cyan", "blue", "geekblue", "purple"];
 
 function Event() {
-    const id = useParams();
+    const  {id}  = useParams();
+    const { loading, data, error, subscribeToMore } = useQuery(GET_EVENT, {variables: {id: id}})
 
-    const { loading, data, error } = useQuery(GET_EVENT, { variables: id })
+    useEffect(()=>{
+        subscribeToMore({
+            document:PARTİCİPANTS_SUBSCRIPTION,
+            variables: {eventId: id},
+            updateQuery: (prev, {subscriptionData}) => {
+                if(!subscriptionData.data) return prev;
+
+                const newParticipantItem = subscriptionData.data.participantCreated;
+                if(newParticipantItem){
+                    return{
+                        event:{
+                            ...prev.event,
+                            participants: [...prev.event.participants, newParticipantItem],
+                        }
+                    }
+                }
+            }
+        })
+    },[subscribeToMore, id])
 
     if (loading) {
         return <Loading />

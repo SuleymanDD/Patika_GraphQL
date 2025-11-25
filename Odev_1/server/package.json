@@ -9,12 +9,18 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "devDependencies": {
+    "dotenv": "^17.2.3",
     "nodemon": "^3.1.10"
   },
   "dependencies": {
-    "graphql-yoga": "^1.18.3",
-    "nanoid": "^5.1.5"
+    "graphql-redis-subscriptions": "^2.7.0",
+    "graphql-subscriptions": "^3.0.0",
+    "graphql-ws": "^6.0.6",
+    "graphql-yoga": "^5.16.0",
+    "ioredis": "^5.8.2",
+    "nanoid": "^5.1.5",
+    "ws": "^8.18.3"
   }
 }
