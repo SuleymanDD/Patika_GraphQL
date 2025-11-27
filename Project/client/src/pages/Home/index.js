@@ -1,14 +1,18 @@
 import {React, useEffect} from "react";
-import { Avatar, List} from 'antd';
+import { Avatar, List, message} from 'antd';
 import { useQuery } from "@apollo/client/react";
 import Loading from "components/Loading";
 import {GET_POSTS, POSTS_SUBSCRIPTION} from "./queries"
-import {Link} from "react-router-dom"
+import {Link, useLocation} from "react-router-dom"
 import styles from "./styles.module.css"
 
 
 function Home() {
   const { loading, error, data, subscribeToMore } = useQuery(GET_POSTS);
+
+  const [messageApi, contextHolder] = message.useMessage();
+  const location = useLocation();
+  const { state } = location;
 
   useEffect(()=>{
     subscribeToMore({
@@ -22,7 +26,13 @@ function Home() {
       },
     });
   },[subscribeToMore]);
-  
+
+  useEffect(() => {
+    if(state && state.showSuccess){
+      messageApi.open({type: "success", content: "Post Created!", duration: 3});
+      window.history.replaceState({}, document.title, window.location.pathname); // State'i temizlemeyi sağlar.
+    }
+  },[state, messageApi]);
 
   
   if(loading){
@@ -33,7 +43,9 @@ function Home() {
   }
 
   return (
-    <div>
+    <>
+      {contextHolder}
+
       <List
         className="demo-loadmore-list"
         loading={false}
@@ -50,7 +62,7 @@ function Home() {
           </List.Item>
         )}
       />
-    </div>
+    </>
   );
 }
 

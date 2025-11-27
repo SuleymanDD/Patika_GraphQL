@@ -8,3 +8,12 @@ query{
   }
 }
 `;
+
+export const NEW_POST_MUTIATION = gql`
+mutation($data: CreatePostInput!){
+  createPost(data: $data) {
+    id
+    title
+  }
+}
+`;
