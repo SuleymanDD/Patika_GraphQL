@@ -6,7 +6,7 @@ import styles from "./styles.module.css"
 function Loading(){
     return (
         <div className={styles.loading}>
-        <Spin indicator={<LoadingOutlined style={{ fontSize: 36 }} spin />} />
+        <Spin delay={300} indicator={<LoadingOutlined style={{ fontSize: 36 }} spin />} />
         </div>
     )
 }
