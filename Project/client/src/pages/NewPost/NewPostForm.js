@@ -2,6 +2,7 @@ import React from 'react';
 import { Form, Input, Button, Select, message } from "antd";
 import { useQuery, useMutation } from '@apollo/client/react';
 import { GET_USERS, NEW_POST_MUTIATION } from './queries';
+import { GET_POSTS } from 'pages/Home/queries';
 import styles from './styles.module.css';
 import {useNavigate} from "react-router-dom"
 
@@ -9,7 +10,7 @@ const { Option } = Select;
 
 function NewPostForm() {
     const { loading: get_users_loading, data: users_data } = useQuery(GET_USERS);
-    const [savePost, { loading }] = useMutation(NEW_POST_MUTIATION);
+    const [savePost, { loading }] = useMutation(NEW_POST_MUTIATION, {refetchQueries: [{ query: GET_POSTS },],}); // refetchQueries kullanarak cachedeki post verilerini güncelledik
 
     const [messageApi, contextHolder] = message.useMessage();
     const navigate = useNavigate();
@@ -34,7 +35,6 @@ function NewPostForm() {
 
         <Form
             name='basic'
-            initialValues={{ remember: true }}
             onFinish={handleSubmit}
             autoComplete='off'
         >
