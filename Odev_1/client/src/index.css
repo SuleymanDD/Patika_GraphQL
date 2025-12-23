@@ -31,3 +31,6 @@ a:hover{
 .ant-typography+h3.ant-typography{
   margin-top:auto;
 }
+.ant-message-custom-content {
+    z-index: 9999 !important;
+}

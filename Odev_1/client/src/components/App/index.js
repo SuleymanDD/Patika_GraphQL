@@ -6,6 +6,7 @@ import styles from "./styles.module.css"
 // Pages
 import Home from "pages/Home";
 import Event from "pages/Event";
+import NewEvent from "pages/NewEvent";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/event/:id" element={<Event />} />
+                            <Route path="/createEvent" element={<NewEvent />} />
                         </Routes>
                     </div>
                 </Col>
