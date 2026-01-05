@@ -5,8 +5,11 @@ import { WebSocketServer } from "ws";
 
 import pubsub from "./pubsub";
 import resolvers from "@resolvers";
-import db from "./data";
+import database from "./db"
+import data from "./data";
 import typeDefs from "@type-defs";
+
+database();
 
 const schema = createSchema({
   typeDefs,
@@ -18,7 +21,7 @@ const yoga = createYoga({
   schema,
   context: {
     pubsub,
-    db,
+    db: data,
   },
 });
 
