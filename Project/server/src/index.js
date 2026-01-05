@@ -9,6 +9,13 @@ import database from "./db"
 import data from "./data";
 import typeDefs from "@type-defs";
 
+import User from "./models/User"
+
+/*setTimeout(async() => {
+  const users = await User.find();
+  console.log(users)
+}, 2000);*/
+
 database();
 
 const schema = createSchema({
@@ -22,6 +29,7 @@ const yoga = createYoga({
   context: {
     pubsub,
     db: data,
+    _db: {User},
   },
 });
 
@@ -35,7 +43,7 @@ useServer(
   {
     schema,
     context: async (ctx) => {
-      return { pubsub, db };
+      return { pubsub, db, _db };
     },
   },
   wsServer
