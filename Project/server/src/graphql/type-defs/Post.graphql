@@ -23,14 +23,13 @@ type Post {
     description: String!
     short_description: String
     cover: String
-    user_id: ID!
     user: User
     comments: [Comment!]!
 }
 
 input CreatePostInput{
-    title: String!, description: String!, short_description: String, user_id: ID!, cover: String
+    title: String!, description: String!, short_description: String, cover: String
 }
 input UpdatePostInput{
-    title: String, description: String, short_description: String, user_id: ID, cover: String
+    title: String, description: String, short_description: String, cover: String
 }

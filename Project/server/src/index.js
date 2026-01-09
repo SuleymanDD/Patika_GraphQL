@@ -9,11 +9,14 @@ import database from "./db"
 import data from "./data";
 import typeDefs from "@type-defs";
 
+// Models
 import User from "./models/User"
+import Post from "./models/Post"
+import Comment from "./models/Comment"
 
 /*setTimeout(async() => {
-  const users = await User.find();
-  console.log(users)
+  const datas = await Comment.find();
+  console.log(datas)
 }, 2000);*/
 
 database();
@@ -29,7 +32,7 @@ const yoga = createYoga({
   context: {
     pubsub,
     db: data,
-    _db: {User},
+    _db: {User, Post, Comment},
   },
 });
 

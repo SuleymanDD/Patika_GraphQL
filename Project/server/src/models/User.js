@@ -11,6 +11,18 @@ const userSchema = new Schema({
     requried: true,
    },
    profile_photo:String,
+   posts: [
+      {
+         type: Schema.Types.ObjectId,
+         ref: "Post"
+      },
+   ],
+   comments: [
+      {
+         type: Schema.Types.ObjectId,
+         ref: "Comment"
+      },
+   ]
 
 });
 

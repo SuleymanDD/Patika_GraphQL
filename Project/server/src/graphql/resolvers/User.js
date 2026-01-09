@@ -1,12 +1,12 @@
 export const User = {
-    posts: (parent, args, {db}) => {
-        let filtered = db.posts.filter((post) => post.user_id === parent.id);
+    posts: async(parent, args, {_db}) => {
+        let filtered = await _db.Post.find({ user: parent.id});
 
         if (args.filter) {
-            filtered = db.filtered.filter((post) => post.title.toLowerCase().startsWith(args.filter.toLowerCase()))
+            filtered = _db.filtered.filter((post) => post.title.toLowerCase().startsWith(args.filter.toLowerCase()))
         }
 
         return filtered;
     },
-    comments: (parent,__,{db}) => db.comments.filter((comment) => comment.user_id === parent.id),
+    comments: async(parent,__,{_db}) =>await _db.Comment.find({user: parent.id}),
 }

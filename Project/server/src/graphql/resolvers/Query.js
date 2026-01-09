@@ -1,6 +1,12 @@
 export const Query = {
-    posts: (_,__,{db}) => db.posts,
-    post: (_, args,{db}) => db.posts.find((post) => post.id === args.id),
+    posts: async(_,__,{_db}) => {
+        const posts = await _db.Post.find();
+        return posts;
+    },
+    post: async(_, args,{_db}) => {
+        const post = await _db.Post.findById(args.id);
+        return post;
+    },
 
     users: async(_,__,{_db}) => {
         const users = await _db.User.find();
@@ -11,6 +17,12 @@ export const Query = {
         return user;
     },
 
-    comments: (_,__,{db}) => db.comments,
-    comment: (_, args,{db}) => db.comments.find((comment) => comment.id === args.id),
+    comments: async(_,__,{_db}) => {
+        const comments = await _db.Comment.find();
+        return comments;
+    },
+    comment: async(_, args,{_db}) => {
+        const comment = await _db.Comment.findById(args.id);
+        return comment;
+    },
 }
