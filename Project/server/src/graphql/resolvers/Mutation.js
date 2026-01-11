@@ -2,50 +2,56 @@ import { nanoid } from "nanoid";
 
 export const Mutation = {
     // Post
-    createPost: (_, { data }, { pubsub, db}) => {
-        const post = {
-            id: nanoid(),
+    createPost: async (_, { data }, { pubsub, _db}) => {
+        const newPost = new _db.Post({
             ...data,
-        }
+        })
 
-        db.posts.unshift(post);
+        const post = await newPost.save();
+        const postCount = await _db.Post.countDocuments();
+
+        const user= await _db.User.findById(data.user.toString());
+        user.posts.push(post.id);
+        user.save();
+
         pubsub.publish("postCreated", { postCreated: post });
-        pubsub.publish("postCount", { postCount: db.posts.length });
+        pubsub.publish("postCount", { postCount });
         return post;
     },
-    updatePost: (_, { id, data }, { pubsub, db }) => {
-        const post_index = db.posts.findIndex((post) => post.id === id);
+    updatePost: async (_, { id, data }, { pubsub, _db }) => {
+        const is_post_exists = await _db.Post.findById(id)
 
-        if (post_index === -1) {
+        if (!is_post_exists) {
             throw new Error("Post is not found!");
         }
 
-        const updatedPost = {
-            ...db.posts[post_index],
-            ...data,
-        }
+        const updatedPost = await _db.Post.findByIdAndUpdate(id,data,{
+            new: true,
+        })
+
         pubsub.publish("postUpdated", { postUpdated: updatedPost });
         return updatedPost;
     },
-    deletePost: (_, { id }, { pubsub, db }) => {
-        const post_index = db.posts.findIndex(post => post.id === id);
+    deletePost: async (_, { id }, { pubsub, _db }) => {
+        const is_post_exists = await _db.Post.findById(id)
 
-        if (post_index === -1) {
+        if (!is_post_exists) {
             throw new Error("Post is not found!");
         }
 
-        const deletedPost = db.posts[post_index];
-        db.posts.splice(post_index, 1);
+        const deletedPost = await _db.Post.findByIdAndDelete(id);
+        const postCount = await _db.Post.countDocuments();
+
         pubsub.publish("postDeleted", { postDeleted: deletedPost });
-        pubsub.publish("postCount", { postCount: db.posts.length });
+        pubsub.publish("postCount", { postCount });
         return deletedPost;
     },
-    deleteAllPosts: (_, __, { pubsub, db }) => {
-        const length = db.posts.length;
-        db.posts.splice(0, length);
+    deleteAllPosts: async (_, __, { pubsub, _db }) => {
+        const deletedPosts = await _db.Post.deleteMany({}); 
 
-        pubsub.publish("postCount", { postCount: db.posts.length });
-        return { count: length }
+        pubsub.publish("postCount", { postCount: deletedPosts.deletedCount });
+
+        return { count: deletedPosts.deletedCount };
     },
 
     // User
