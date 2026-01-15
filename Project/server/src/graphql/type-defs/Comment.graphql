@@ -19,15 +19,18 @@ type Subscription{
 type Comment {
     id: ID!
     text: String!
-    post_id: ID!
-    user_id: ID!
     user: User!
     post: Post!
 }
 
 input CreateCommentInput{
-    text: String!, post_id: ID!, user_id: ID!
+    text: String!, 
+    post: ID!, 
+    user: ID!
 }
+
 input UpdateCommentInput{
-    text: String, post_id: ID, user_id: ID
+    text: String, 
+    post: ID, 
+    user: ID
 }
