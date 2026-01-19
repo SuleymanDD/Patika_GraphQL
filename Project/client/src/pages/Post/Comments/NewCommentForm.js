@@ -18,12 +18,14 @@ function NewCommentForm({ post_id }) {
         try {
             await saveComment({
                 variables: {
-                    data: { ...values, post_id }
+                    data: { ...values, post: post_id }
                 }
             });
             messageApi.open({ type: 'success', content: 'Comment Created!', duration: 3 });
             formRef.current.resetFields();
         } catch (error) {
+            const data = { ...values, post: post_id }
+            console.log(data)
             messageApi.open({ type: 'error', content: 'Comment Not Created!', duration: 5 });
         }
     }
@@ -41,11 +43,11 @@ function NewCommentForm({ post_id }) {
                 <Row gutter={24}>
                     <Col span={9}>
                         <Form.Item
-                            name="user_id"
+                            name="user"
                             rules={[{ required: true, message: "Please select a user!" }]}
                         >
                             <Select disabled={get_users_loading || loading} loading={get_users_loading} placeholder="Select A User">
-                                {users_data && users_data.users.map((item) => <Option key={item.id} value={item.id}>{item.fullName}</Option>)}
+                                {users_data && users_data.users.map((item) => <Option key={item._id} value={item._id}>{item.fullName}</Option>)}
                             </Select>
                         </Form.Item>
                     </Col>

@@ -1,12 +1,12 @@
 type Query {
     users: [User!]!
-    user(id: ID!): User!
+    user(_id: ID!): User!
 }
 
 type Mutation {
     createUser(data: CreateUserInput!): User!
-    updateUser(id: ID!, data: UpdateUserInput!): User!
-    deleteUser(id: ID!): User!
+    updateUser(_id: ID!, data: UpdateUserInput!): User!
+    deleteUser(_id: ID!): User!
     deleteAllUsers: DeleteAllOutput!
 }
 
@@ -17,7 +17,7 @@ type Subscription{
 }
 
 type User {
-    id: ID!
+    _id: ID!
     fullName: String!
     age: Int!
     profile_photo: String

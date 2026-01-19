@@ -1,23 +1,23 @@
 type Query {
     comments: [Comment!]!
-    comment(id: ID): Comment
+    comment(_id: ID): Comment
 }
 
 type Mutation {
     createComment(data: CreateCommentInput!): Comment!
-    updateComment(id: ID!, data: UpdateCommentInput!): Comment!
-    deleteComment(id: ID!): Comment!
+    updateComment(_id: ID!, data: UpdateCommentInput!): Comment!
+    deleteComment(_id: ID!): Comment!
     deleteAllComments: DeleteAllOutput!
 }
 
 type Subscription{
-    commentCreated(post_id: ID!): Comment!
+    commentCreated(post: ID!): Comment!
     commentUpdated: Comment!
     commentDeleted: Comment!
 }
 
 type Comment {
-    id: ID!
+    _id: ID!
     text: String!
     user: User!
     post: Post!

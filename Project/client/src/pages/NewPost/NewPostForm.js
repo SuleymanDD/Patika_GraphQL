@@ -64,11 +64,11 @@ function NewPostForm() {
             </Form.Item>
 
             <Form.Item
-                name="user_id"
+                name="user"
                 rules={[{ required: true, message: "Please select a user!" }]}
             >
                 <Select disabled={get_users_loading || loading} loading={get_users_loading} placeholder="Select A User">
-                    {users_data && users_data.users.map((item) => <Option key={item.id} value={item.id}>{item.fullName}</Option>)}
+                    {users_data && users_data.users.map((item) => <Option key={item._id} value={item._id}>{item.fullName}</Option>)}
                 </Select>
             </Form.Item>
 

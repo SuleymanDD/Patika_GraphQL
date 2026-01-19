@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 
 export const GET_POST = gql`
  query getPost($id: ID!){
-  post(id: $id) {
-    id
+  post(_id: $id) {
+    _id
     title
     description
     cover
@@ -13,7 +13,7 @@ export const GET_POST = gql`
 
 const commentFragment = gql`
   fragment CommentFragment on Comment {
-    id
+    _id
     text
     user {
       fullName
@@ -24,7 +24,7 @@ const commentFragment = gql`
 
 export const GET_POST_COMMENTS = gql`
  query($id: ID!){
-  post(id: $id) {
+  post(_id: $id) {
     comments{
       ...CommentFragment
     }
@@ -35,7 +35,7 @@ ${commentFragment}
 
 export const COMMENT_SUBSCRIPTION = gql`
   subscription($post_id: ID!){
-    commentCreated(post_id: $post_id) {
+    commentCreated(post: $post_id) {
       ...CommentFragment
     }
 }

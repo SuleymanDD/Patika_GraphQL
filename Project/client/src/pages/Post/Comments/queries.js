@@ -3,7 +3,7 @@ import { gql } from "@apollo/client";
 export const GET_USERS = gql`
 query{
   users {
-    id
+    _id
     fullName
   }
 }
@@ -12,9 +12,12 @@ query{
 export const NEW_COMMENT_MUTIATION = gql`
 mutation($data: CreateCommentInput!){
   createComment(data: $data) {
-    id
+    _id
     text
-    user_id
+    user{
+      _id
+      fullName
+    }
   }
 }
 `;

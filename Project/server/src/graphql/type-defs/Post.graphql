@@ -1,12 +1,12 @@
 type Query {
     posts: [Post!]
-    post(id: ID): Post
+    post(_id: ID): Post
 }
 
 type Mutation {
     createPost(data: CreatePostInput!): Post!
-    updatePost(id: ID!, data: UpdatePostInput!): Post!
-    deletePost(id: ID!): Post!
+    updatePost(_id: ID!, data: UpdatePostInput!): Post!
+    deletePost(_id: ID!): Post!
     deleteAllPosts: DeleteAllOutput!
 }
 
@@ -18,7 +18,7 @@ type Subscription{
 }
 
 type Post {
-    id: ID!
+    _id: ID!
     title: String!
     description: String!
     short_description: String

@@ -6,18 +6,12 @@ import { WebSocketServer } from "ws";
 import pubsub from "./pubsub";
 import resolvers from "@resolvers";
 import database from "./db"
-import data from "./data";
 import typeDefs from "@type-defs";
 
 // Models
 import User from "./models/User"
 import Post from "./models/Post"
 import Comment from "./models/Comment"
-
-/*setTimeout(async() => {
-  const datas = await Comment.find();
-  console.log(datas)
-}, 2000);*/
 
 database();
 
@@ -31,7 +25,6 @@ const yoga = createYoga({
   schema,
   context: {
     pubsub,
-    db: data,
     _db: {User, Post, Comment},
   },
 });
@@ -46,7 +39,10 @@ useServer(
   {
     schema,
     context: async (ctx) => {
-      return { pubsub, db, _db };
+      return { 
+        pubsub, 
+        _db: { User, Post, Comment } // Direkt burada tanımlayın
+      };
     },
   },
   wsServer

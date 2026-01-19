@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 const postFragment = gql`
   fragment PostFragment on Post{
-    id
+    _id
     title
     short_description
     user {

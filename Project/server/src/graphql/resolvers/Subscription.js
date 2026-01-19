@@ -12,9 +12,11 @@ export const Subscription = {
         subscribe: (_, __, { pubsub }) => pubsub.asyncIterator("postDeleted"),
     },
     postCount: {
-        subscribe: (_, __, { pubsub, db }) => {
+        subscribe: async (_, __, { pubsub, _db }) => {
+            const postCount = await _db.Post.countDocuments();
+
             setTimeout(() => {
-                pubsub.publish("postCount", { postCount: db.posts.length })
+                pubsub.publish("postCount", { postCount })
             });
             return pubsub.asyncIterator("postCount")
         },
@@ -36,7 +38,7 @@ export const Subscription = {
         subscribe:withFilter(
             (_, __, { pubsub }) => pubsub.asyncIterator("commentCreated"),
             (payload, variables) => {
-                return variables.post_id ? (payload.commentCreated.post_id === variables.post_id) : true;
+                return variables.post ? (payload.commentCreated.post === variables.post) : true;
             },
         ) 
     },

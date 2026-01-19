@@ -18,28 +18,28 @@ export const Mutation = {
         pubsub.publish("postCount", { postCount });
         return post;
     },
-    updatePost: async (_, { id, data }, { pubsub, _db }) => {
-        const is_post_exists = await _db.Post.findById(id)
+    updatePost: async (_, { _id, data }, { pubsub, _db }) => {
+        const is_post_exists = await _db.Post.findById(_id)
 
         if (!is_post_exists) {
             throw new Error("Post is not found!");
         }
 
-        const updatedPost = await _db.Post.findByIdAndUpdate(id,data,{
+        const updatedPost = await _db.Post.findByIdAndUpdate(_id,data,{
             new: true,
         })
 
         pubsub.publish("postUpdated", { postUpdated: updatedPost });
         return updatedPost;
     },
-    deletePost: async (_, { id }, { pubsub, _db }) => {
-        const is_post_exists = await _db.Post.findById(id)
+    deletePost: async (_, { _id }, { pubsub, _db }) => {
+        const is_post_exists = await _db.Post.findById(_id)
 
         if (!is_post_exists) {
             throw new Error("Post is not found!");
         }
 
-        const deletedPost = await _db.Post.findByIdAndDelete(id);
+        const deletedPost = await _db.Post.findByIdAndDelete(_id);
         const postCount = await _db.Post.countDocuments();
 
         pubsub.publish("postDeleted", { postDeleted: deletedPost });
@@ -49,7 +49,7 @@ export const Mutation = {
     deleteAllPosts: async (_, __, { pubsub, _db }) => {
         const deletedPosts = await _db.Post.deleteMany({}); 
 
-        pubsub.publish("postCount", { postCount: deletedPosts.deletedCount });
+        pubsub.publish("postCount", { postCount: 0 });
 
         return { count: deletedPosts.deletedCount };
     },
@@ -65,28 +65,28 @@ export const Mutation = {
 
         return user;
     },
-    updateUser: async(_, { id, data }, { pubsub, _db }) => {
-        const is_user_exists = await _db.User.findById(id)
+    updateUser: async(_, { _id, data }, { pubsub, _db }) => {
+        const is_user_exists = await _db.User.findById(_id)
 
         if (!is_user_exists) {
             throw new Error("User is not found!");
         }
 
-        const updatedUser = await _db.User.findByIdAndUpdate(id,data,{
+        const updatedUser = await _db.User.findByIdAndUpdate(_id,data,{
             new: true,
         })
         
         pubsub.publish("userUpdated", { userUpdated: updatedUser });
         return updatedUser;
     },
-    deleteUser: async(_, { id }, { pubsub, _db }) => {
-        const is_user_exists = await _db.User.findById(id)
+    deleteUser: async(_, { _id }, { pubsub, _db }) => {
+        const is_user_exists = await _db.User.findById(_id)
 
         if (!is_user_exists) {
             throw new Error("User is not found!");
         }
 
-        const deletedUser = await _db.User.findByIdAndDelete(id);
+        const deletedUser = await _db.User.findByIdAndDelete(_id);
 
         pubsub.publish("userDeleted", { userDeleted: deletedUser });
         return deletedUser;
@@ -105,8 +105,8 @@ export const Mutation = {
         const user = await _db.User.findById(data.user.toString());
         const post = await _db.Post.findById(data.post.toString());
 
-        user.comments.push(comment.id);
-        post.comments.push(comment.id);
+        user.comments.push(comment._id);
+        post.comments.push(comment._id);
 
         await user.save();
         await post.save();
@@ -114,28 +114,28 @@ export const Mutation = {
         pubsub.publish("commentCreated", { commentCreated: createdComment });
         return createdComment;
     },
-    updateComment: async (_, { id, data }, { pubsub, _db }) => {
-        const is_comment_exists = await _db.Comment.findById(id)
+    updateComment: async (_, { _id, data }, { pubsub, _db }) => {
+        const is_comment_exists = await _db.Comment.findById(_id)
 
         if (!is_comment_exists) {
             throw new Error("Comment is not found!");
         }
 
-        const updatedComment = await _db.Comment.findByIdAndUpdate(id,data,{
+        const updatedComment = await _db.Comment.findByIdAndUpdate(_id,data,{
             new: true,
         })
 
         pubsub.publish("commentUpdated", { commentUpdated: updatedComment });
         return updatedComment;
     },
-    deleteComment: async(_, { id }, { pubsub, _db }) => {
-        const is_comment_exists = await _db.Comment.findById(id)
+    deleteComment: async(_, { _id }, { pubsub, _db }) => {
+        const is_comment_exists = await _db.Comment.findById(_id)
 
         if (!is_comment_exists) {
             throw new Error("Comment is not found!");
         }
 
-        const deletedComment = await _db.Comment.findByIdAndDelete(id);
+        const deletedComment = await _db.Comment.findByIdAndDelete(_id);
 
         pubsub.publish("commentDeleted", { commentDeleted: deletedComment });
         return deletedComment;
