@@ -12,6 +12,7 @@ function App() {
         <Link to="/new">New Questions</Link>
       </nav>
 
+      <hr />
 
       <Routes>
         <Route path="/" element={<Questions />}></Route>
