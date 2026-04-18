@@ -19,7 +19,7 @@ function Questions() {
     <div>
       {
         data.questions.map((question) => {
-          return <div><Link to={`/q/${question.id}`}>{question.title}</Link></div>
+          return <div key={question.id}><Link to={`/q/${question.id}`}>{question.title}</Link></div>
         })
       }
     </div>
