@@ -6,17 +6,14 @@ import {QUESTION_MUTATION} from "./queries"
 
 const initialOptions = [{ title: "" }, { title: "" }];
 function New() {
-  const [createQuestion, { loading, data }] = useMutation(QUESTION_MUTATION);
-
-  
+  const [createQuestion, { loading }] = useMutation(QUESTION_MUTATION);
 
   const [title, setTitle] = useState("");
-  const [options, setOptions] = useState(initialOptions)
+  const [options, setOptions] = useState([{ title: "" }, { title: "" }])
 
   const handleChangeOption = ( {target} ) => {
     const newArray = options;
     newArray[target.id]= target.value;
-
     setOptions([...newArray]);
   }
 

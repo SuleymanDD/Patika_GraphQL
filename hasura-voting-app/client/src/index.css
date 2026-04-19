@@ -41,3 +41,17 @@ button{
   margin-right: 5px;
 }
 
+label{
+  display: block;
+}
+
+progress{
+  margin-top: 5px;
+}
+
+.vote_count{
+  font-size: 14px;
+  color: gray;
+  margin-left: 5px;
+}
+

@@ -2,6 +2,7 @@ import { Link } from "react-router-dom"
 import { useSubscription } from "@apollo/client/react"
 import { QUESTIONS_SUBSCRIPTION } from "./queries"
 import Loading from "../../components/Loading";
+import Error from "../../components/Error";
 
 function Questions() {
 
@@ -12,8 +13,9 @@ function Questions() {
     return <Loading />
   }
 
-  console.log(data)
-  console.log("error: "+error)
+  if (error) {
+    return <Error message={error.message} />
+  }
 
   return (
     <div>
