@@ -1,19 +1,47 @@
 import express from "express";
 import Boom from "boom";
+import Hasura from "../../clients/hasura";
+import bcrypt from "bcryptjs";
+import { registerSchema } from "./validations";
+import { IS_USER_EXIST, INSERT_USER } from "./queries";
 const router = express.Router();
 
 
-router.post("/register", (req, res) => {
+router.post("/register", async(req, res,next) => {
     const input = req.body.input.data;
-    
-    if(!input.email || !input.password) {
-        return Boom.badRequest("Email and password are required");
+    input.email = input.email.toLowerCase();
+
+    const { error } = registerSchema.validate(input);
+
+    if(error) {
+        return next(Boom.badRequest(error.details[0].message));
     }
 
 
-    res.json({
-        accessToken: "accessToken",
-    });
+    try {
+        const isUserExist = await Hasura.request(IS_USER_EXIST, { email: input.email });
+
+        if(isUserExist.users.length > 0) {
+            throw Boom.conflict(`User already exists ${input.email}`);
+        }
+
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(input.password, salt);
+
+        const user = await Hasura.request(INSERT_USER, { 
+            "input": {
+                ...input,
+                password: hash
+            } 
+        });
+
+        console.log(user);
+
+        res.json({accessToken: "accessToken"});
+    } catch (error) {
+        return next(Boom.badRequest(error));
+    }
+
 });
 
 

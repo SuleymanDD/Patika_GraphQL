@@ -12,8 +12,11 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "bcryptjs": "^3.0.3",
     "boom": "^7.3.0",
     "express": "^5.2.1",
+    "graphql": "^16.13.2",
     "graphql-request": "^7.4.0",
     "sucrase": "^3.35.1"
   },
