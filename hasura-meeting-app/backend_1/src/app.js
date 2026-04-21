@@ -1,18 +1,28 @@
-const express = require('express');
+import express from 'express';
+import Boom from "boom";
+
+import auth from './routes/auth';
+
 const app = express();
 
 app.use(express.json());
 
-app.post('/register', (req, res) => {
-    const input = req.body.input.data;
-    console.log(input);
+app.use('/auth', auth);
 
-    res.json(
-        {
-            accessToken: "accessToken",
-        }
-    )
+app.use((req, res, next) => {
+    return next(Boom.notFound("Not found"));
 });
+
+app.use((err, req, res, next) => {
+    if (err) {
+        if (err.output) {
+            return res.status(err.output.statusCode || 500).json(err.output.payload);
+        }
+    }
+
+    return res.status(500).json(err);
+});
+
 
 app.listen(4000, () => {
     console.log('Server is running on port 4000 -> http://localhost:4000');
