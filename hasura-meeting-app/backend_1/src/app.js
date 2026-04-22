@@ -1,9 +1,11 @@
 import express from 'express';
 import Boom from "boom";
+import dotenv from 'dotenv';
 
 import auth from './routes/auth';
 
 const app = express();
+dotenv.config();
 
 app.use(express.json());
 
