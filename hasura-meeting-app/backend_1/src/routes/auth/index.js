@@ -2,11 +2,12 @@ import express from "express";
 import Boom from "boom";
 import Hasura from "../../clients/hasura";
 import bcrypt from "bcryptjs";
-import { registerSchema, loginSchema } from "./validations";
-import { IS_USER_EXIST, INSERT_USER, LOGIN_QUERY } from "./queries";
-import { signAccessToken } from "./helpers";
+import { registerSchema, loginSchema } from "./validations.js";
+import { IS_USER_EXIST, INSERT_USER, LOGIN_QUERY } from "./queries.js";
+import { signAccessToken, verifyAccessToken } from "./helpers.js";
 const router = express.Router();
 
+router.get('/test', (req, res) => res.send("Auth route is working!"));
 
 router.post("/register", async (req, res, next) => {
     const input = req.body.input.data;
@@ -78,5 +79,12 @@ router.post("/login", async (req, res, next) => {
     }
 });
 
+router.post("/me", verifyAccessToken, (req, res, next) => {
+    const {aud} = req.payload;
+
+    return res.json({ 
+        user_id: aud
+    });
+});
 
 export default router;
