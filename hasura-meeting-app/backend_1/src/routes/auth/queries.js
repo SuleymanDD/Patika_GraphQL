@@ -20,3 +20,13 @@ mutation insertUser($input:users_insert_input!){
   }
 }
 `;
+
+export const LOGIN_QUERY = `
+query Login($email: String!) {
+  users(where: {email: {_eq: $email}}) {
+    id
+    email
+    password
+  }
+}
+`;
