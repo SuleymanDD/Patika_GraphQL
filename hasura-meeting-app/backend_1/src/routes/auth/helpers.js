@@ -31,8 +31,6 @@ export const signAccessToken = (user) => {
 export const verifyAccessToken = (req,res,next) => {
     const authHeader = req.headers.authorization || req.query.token?.toString();
 
-    console.log(authHeader);
-
     if (!authHeader) {
         return next(Boom.unauthorized("No access token provided!"));
     }
