@@ -1,5 +1,5 @@
 import React, { use, useEffect, useState } from 'react'
-import { GET_CHARACTERS } from './queries'
+import { GET_CHARACTERS, GET_SEARCHED_CHARACTERS } from './queries'
 import { useLazyQuery, useQuery } from '@apollo/client/react'
 import styles from './styles.module.css'
 import background from '../../assets/background.jpg'
@@ -12,13 +12,15 @@ function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [backendPage, setBackendPage] = useState(1);
   const [allCharacters, setAllCharacters] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
 
   const [getCharacters, { data, loading, error }] = useLazyQuery(GET_CHARACTERS);
+  const [getSearchedCharacters, { data: searchedData, loading: searchedLoading, error: searchedError }] = useLazyQuery(GET_SEARCHED_CHARACTERS);
 
   async function getCharactersFunc(targetIds) {
     try {
       for (const id of targetIds) {
-        console.log("Fetching characters for backend page:", id);
         const era = await getCharacters({ variables: { id } });
         setAllCharacters(prev => [...prev, ...era.data?.characters?.results || []]);
       };
@@ -41,6 +43,34 @@ function Home() {
     }
   }
 
+  async function getSearchedCharactersFunc(targetIdss) {
+    try {
+      for (const id of targetIdss) {
+        const era = await getSearchedCharacters({ variables: { id, filter: { name: searchTerm } } });
+        setSearchResults(prev => [...prev, ...era.data?.characters?.results || []]);
+      };
+    } catch (error) {
+      if (error.name === 'AbortError' || error.message.includes('aborted')) {
+        return;
+      }
+      if (error.message.includes('Failed to fetch') || error.message.includes('Network Error')) {
+        Modal.error({
+          title: 'Bağlantı Hatası',
+          content: 'Çok fazla istek atıldı veya internet bağlantınız kesildi. Sayfayı yenilemek ister misiniz?',
+          okText: 'Sayfayı Yenile',
+          onOk() {
+            window.location.reload();
+          }
+        });
+        return;
+      }
+      console.error("Gerçek bir hata var:", error);
+    }
+  }
+
+  useEffect(() => {
+    setCurrentPage(1); // Sayfa boyutu değiştiğinde sayfayı 1'e sıfırla
+  }, [pageSize, searchTerm]);
 
   useEffect(() => {
     setAllCharacters([]); // Sayfa değiştiğinde karakter listesini sıfırla
@@ -64,6 +94,29 @@ function Home() {
     getCharactersFunc(targetIds);
   }, [currentPage, pageSize]);
 
+  useEffect(() => {
+    setSearchResults([]); // Sayfa değiştiğinde karakter listesini sıfırla
+    const firstWantedCharacterIndex = (currentPage - 1) * pageSize;
+    const lastWantedCharacters = currentPage * pageSize;
+    let fwcBackendPage = Math.ceil(firstWantedCharacterIndex / 20);
+    let lwcBackendPage = Math.ceil(lastWantedCharacters / 20);
+
+    //if (lwcBackendPage > Math.ceil(totalCharacters / pageSize)) lwcBackendPage = Math.ceil(totalCharacters / pageSize); // API'nin toplam sayfa sayısını aşmamak için kontrol ekliyoruz
+
+    let targetIds = [];
+
+    for (let i = fwcBackendPage; i <= lwcBackendPage; i++) {
+      if (fwcBackendPage === 0) {
+        fwcBackendPage = 1;
+        continue;
+      }
+      targetIds.push(fwcBackendPage);
+      fwcBackendPage++;
+    }
+    getSearchedCharactersFunc(targetIds);
+  }, [searchTerm, currentPage, pageSize]);
+
+
   const startIndex = (currentPage - 1) * Number(pageSize);
   const firstIndexInArray = () => {
     for (let i = 0; i < allCharacters.length; i++) {
@@ -73,8 +126,34 @@ function Home() {
     }
   }
   const endIndex = firstIndexInArray() + Number(pageSize);
-  const displayedCharacters = allCharacters.slice(firstIndexInArray(), endIndex);
-  console.log("Displayed characters:", displayedCharacters);
+
+  let startIndexInSearchResults;
+  if (currentPage === 1) {
+    startIndexInSearchResults = 0;
+  } else {
+    startIndexInSearchResults = ((currentPage - 1) * Number(pageSize)) % 20;
+  }
+
+  let displayedCharacters, totalCharacters;
+
+  if (searchTerm.trim() === "") {
+    displayedCharacters = allCharacters.slice(firstIndexInArray(), endIndex);
+    if (data?.characters?.info?.count !== 0) {
+      totalCharacters = data?.characters?.info?.count || displayedCharacters.length;
+    }
+  } else {
+    displayedCharacters = searchResults.slice(startIndexInSearchResults, startIndexInSearchResults + Number(pageSize));
+    if (searchedData?.characters?.info?.count !== 0) {
+      totalCharacters = searchedData?.characters?.info?.count || displayedCharacters.length;
+    }
+  }
+
+  console.log("total characters:", totalCharacters);
+
+
+  //console.log("Displayed characters:", displayedCharacters);
+  //console.log("Total characters count from API:", totalCharacters);
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -99,6 +178,8 @@ function Home() {
               type="text"
               className={styles.searchInput}
               placeholder="Name, description, location..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
@@ -219,7 +300,7 @@ function Home() {
           <Pagination
             current={currentPage}
             pageSize={Number(pageSize)} // Sayfa başına gösterilecek kart
-            total={826} //data?.characters?.info?.count || 0
+            total={totalCharacters} //data?.characters?.info?.count || 0
             showSizeChanger={false} // Sağdaki sayfa boyutu seçiciyi gizler
             onChange={(page) => setCurrentPage(page)}
           />
