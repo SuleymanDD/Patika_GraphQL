@@ -88,15 +88,22 @@
 }
 
 .clearFiltersBtn {
-    font-size: 11px;
+    font-size: 12px;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
     color: #8c8c8c;
+
+    /* İkon ile "Clear filters" yazısını kendi içinde dikeyde ortalamak için */
+    display: inline-flex !important;
+    align-items: center;
+
+    /* Yazının üzerine gelindiğinde (hover) kullanıcıya tıklanabilir hissi vermek için */
+    transition: color 0.2s ease;
+    user-select: none;
+    /* Çift tıklayınca yazının mavi boyanmasını engeller */
 }
 
 .clearFiltersBtn:hover {
-    color: #bfbfbf;
+    color: #505050 !important;
 }
 
 /* Sol Filtreleme Menüsü */
@@ -188,56 +195,122 @@
 
 /* Lokasyon arama çubuğunun tasarımı */
 .locationSearchInput {
-  background-color: #f5f5f5 !important;
-  border: none !important;
-  border-radius: 4px !important;
-  font-size: 13px;
-  padding: 6px 10px;
+    background-color: #f5f5f5 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    font-size: 13px;
+    padding: 6px 10px;
 }
 
 .locationSearchInput::placeholder {
-  color: #bfbfbf;
+    color: #bfbfbf;
 }
 
 /* Uzun lokasyon isimlerinin düzgün kırılması veya hizalanması için */
 .filterLabelWrap {
-  color: #262626;
-  font-size: 13px;
-  display: inline-block;
-  max-width: 140px; /* Yazının taşmasını önlemek için sınır */
-  vertical-align: top;
-  line-height: 1.3;
+    color: #262626;
+    font-size: 13px;
+    display: inline-block;
+    max-width: 140px;
+    /* Yazının taşmasını önlemek için sınır */
+    vertical-align: top;
+    line-height: 1.3;
 }
 
 
 /* Sayfalama alanını ortalama ve boşluklandırma */
 .paginationContainer {
-  display: flex;
-  justify-content: center;
-  margin-top: 50px;
-  margin-bottom: 20px;
-  width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    width: 100%;
 }
 
 /* Ant Design Sayfalama Numaralarını Görseldeki Sarı/Turuncu Renge Boyama */
 .paginationContainer .ant-pagination-item-active {
-  background-color: #f39c12 !important; /* Görseldeki sarı/turuncu ton */
-  border-color: #f39c12 !important;
+    background-color: #f39c12 !important;
+    /* Görseldeki sarı/turuncu ton */
+    border-color: #f39c12 !important;
 }
 
 .paginationContainer .ant-pagination-item-active a {
-  color: #ffffff !important; /* Aktif sayfa sayısı beyaz olsun */
+    color: #ffffff !important;
+    /* Aktif sayfa sayısı beyaz olsun */
 }
 
 /* Diğer pasif numaraların üzerine gelindiğinde (Hover) */
 .paginationContainer .ant-pagination-item:hover border-color,
 .paginationContainer .ant-pagination-item:hover a {
-  color: #f39c12 !important;
-  border-color: #f39c12 !important;
+    color: #f39c12 !important;
+    border-color: #f39c12 !important;
 }
 
 /* Ok butonlarının (Önceki/Sonraki) rengi */
 .paginationContainer .ant-pagination-prev:hover .ant-pagination-item-link,
 .paginationContainer .ant-pagination-next:hover .ant-pagination-item-link {
-  color: #f39c12 !important;
+    color: #f39c12 !important;
+}
+
+.emptyContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    margin: 0px auto;
+}
+
+/* Dıştaki açık renkli büyük halka */
+.iconCircleOuter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background-color: #f2f4ff;
+    /* Çok açık mavi/mor tonu */
+    margin-bottom: 32px;
+}
+
+/* İçteki gölgeli beyaz halka */
+.iconCircleInner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 95px;
+    height: 95px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0px 8px 24px rgba(149, 157, 165, 0.2);
+    /* Yumuşak alt gölge */
+}
+
+/* Büyüteç İkonu */
+.magnifierIcon {
+    font-size: 36px;
+    color: #3b59ff;
+    /* Görseldeki canlı mavi tonu */
+}
+
+/* Ana Başlık */
+.mainTitle {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0b0b0c;
+    /* Koyu siyah/lacivert tonu */
+    margin: 0 0 16px 0;
+    max-width: 500px;
+    line-height: 1.4;
+}
+
+/* Alt Açıklama Yazısı */
+.subTitle {
+    font-size: 16px;
+    color: #8a8d99;
+    /* Gri tonu */
+    margin: 0;
 }
