@@ -152,9 +152,82 @@ export const GET_CHARACTERS_WITH_IDS = gql`
     species
     gender
     image
+    type
     location{
       name
     }
   }
 }
+`;
+
+export const GET_COUNTS_SPECIES_SELECTED = gql`
+  query($selectedSpecies: String!){
+    maleCount: characters(filter: { species: $selectedSpecies, gender: "Male" }) {
+      info { count }
+    }
+    femaleCount: characters(filter: { species: $selectedSpecies, gender: "Female" }) {
+      info { count }
+    }
+    unknownGenderCount: characters(filter: { species: $selectedSpecies, gender: "unknown" }) {
+      info { count }
+    }
+    genderlessCount: characters(filter: { species: $selectedSpecies, gender: "Genderless" }) {
+      info { count }
+    }
+  }
+`;
+
+export const GET_COUNTS_GENDER_SELECTED = gql`
+  query($selectedGender: String!){
+    humanCount: characters(filter: { species: "Human", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  alienCount: characters(filter: { species: "Alien", gender: $selectedGender  }) {
+    info {
+      count
+    }
+  }
+  humanoidCount: characters(filter: { species: "Humanoid", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  animalCount: characters(filter: { species: "Animal", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  robotCount: characters(filter: { species: "Robot", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  cronenbergCount: characters(filter: { species: "Cronenberg", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  mythologCount: characters(filter: { species: "Mytholog", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  diseaseCount: characters(filter: { species: "Disease", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  poopybuttholeCount: characters(filter: { species: "Poopybutthole", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  unknownSpeciesCount: characters(filter: { species: "unknown", gender: $selectedGender }) {
+    info {
+      count
+    }
+  }
+  }
 `;

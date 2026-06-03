@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { GET_CHARACTERS, GET_FILTERS_COUNTS, GET_LOCATIONS, GET_CHARACTERS_WITH_IDS } from './queries'
+import { GET_CHARACTERS, GET_FILTERS_COUNTS, GET_LOCATIONS, GET_CHARACTERS_WITH_IDS, GET_COUNTS_SPECIES_SELECTED, GET_COUNTS_GENDER_SELECTED } from './queries'
 import { useLazyQuery, useQuery } from '@apollo/client/react'
 import styles from './styles.module.css'
 import background from '../../assets/background.jpg'
 import { SearchOutlined, ReloadOutlined } from '@ant-design/icons';
-import { Row, Col, Card, Space, Typography, Select, Input, Pagination, Modal, Radio } from 'antd';
-const { Title, Text } = Typography;
+import { Row, Col, Card, Space, Select, Input, Pagination, Modal, Radio } from 'antd';
 
 function Home() {
   const [pageSize, setPageSize] = useState(16);
@@ -18,26 +17,31 @@ function Home() {
   const [locationSearchTerm, setLocationSearchTerm] = useState("");
   const [debouncedLocationSearchTerm, setDebouncedLocationSearchTerm] = useState("");
   const [searchedLocations, setSearchedLocations] = useState([]);
+  const [firstSelectedFilter, setFirstSelectedFilter] = useState("");
 
   const [selectedGender, setSelectedGender] = useState(null);
   const [selectedSpecies, setSelectedSpecies] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
 
   const [getCharacters, { data, loading, error }] = useLazyQuery(GET_CHARACTERS);
-  const [getLocations, { data: locationsData, loading: locationsLoading, error: locationsError }] = useLazyQuery(GET_LOCATIONS);
+  const [getLocations, { data: locationsData }] = useLazyQuery(GET_LOCATIONS);
   const [getCharactersWithIds, { data: byIdsCharactersData }] = useLazyQuery(GET_CHARACTERS_WITH_IDS)
   const { data: filtersCountsData } = useQuery(GET_FILTERS_COUNTS);
+  const { data: getCountsSelectedSpecies } = useQuery(GET_COUNTS_SPECIES_SELECTED, { variables: { selectedSpecies }, skip: !selectedSpecies });
+  const { data: getCountsSelectedGender } = useQuery(GET_COUNTS_GENDER_SELECTED, { variables: { selectedGender }, skip: !selectedGender });
+
+  const allGenders = [{ name: "Male", total: filtersCountsData?.maleCount?.info?.count }, { name: "Female", total: filtersCountsData?.femaleCount?.info?.count }, { name: "unknown", total: filtersCountsData?.unknownGenderCount?.info?.count }, { name: "Genderless", total: filtersCountsData?.genderlessCount?.info?.count }]
+
+  const allSpecies = [{ name: "Human", total: filtersCountsData?.humanCount?.info?.count }, { name: "Alien", total: filtersCountsData?.alienCount?.info?.count }, { name: "Humanoid", total: filtersCountsData?.humanoidCount?.info?.count }, { name: "Animal", total: filtersCountsData?.animalCount?.info?.count }, { name: "Robot", total: filtersCountsData?.robotCount?.info?.count }, { name: "Cronenberg", total: filtersCountsData?.cronenbergCount?.info?.count }, { name: "Mytholog", total: filtersCountsData?.mythologCount?.info?.count }, { name: "Disease", total: filtersCountsData?.diseaseCount?.info?.count }, { name: "Poopybutthole", total: filtersCountsData?.poopybuttholeCount?.info?.count }, { name: "unknown", total: filtersCountsData?.unknownSpeciesCount?.info?.count }];
 
   let displayedCharacters, startIndexInSearchResults;
 
   async function getCharactersFunc(targetIds) {
     try {
-      console.log("Giriş yapılıyor...");
       for (const id of targetIds) {
         const era = await getCharacters({ variables: { id, filter: { name: searchTerm, gender: selectedGender, species: selectedSpecies } } });
         if (id === 1) setTotalCharacters(era.data?.characters?.info?.count);
         setAllCharacters(prev => [...prev, ...era.data?.characters?.results || []]);
-        console.log("ilk data:", era.data?.characters?.results)
       };
     } catch (error) {
       if (error.name === 'AbortError' || error.message.includes('aborted')) {
@@ -83,7 +87,7 @@ function Home() {
   }
   async function getCharactersWithIdsFunc() {
     try {
-      if (selectedLocation.length>0) {
+      if (selectedLocation.length > 0) {
         const era = await getLocations({ variables: { locationName: selectedLocation } });
         const charactersIds = (era.data?.locations?.results?.[0]?.residents).map((e) => e.id);
         const realEra = await getCharactersWithIds({ variables: { ids: charactersIds } });
@@ -112,14 +116,19 @@ function Home() {
   const handleRadioChange = (e) => {
     const value = e.target.value;
     setSelectedGender(value);
+    if(!firstSelectedFilter && !selectedLocation) setFirstSelectedFilter("Gender");
   };
   const handleSpeciesChange = (e) => {
     const value = e.target.value;
     setSelectedSpecies(value);
+    if(!firstSelectedFilter && !selectedLocation) setFirstSelectedFilter("Species");
   };
   const handleLocationChange = (e) => {
     const value = e.target.value;
     setSelectedLocation(value);
+    setSelectedSpecies("");
+    setSelectedGender("");
+    setFirstSelectedFilter("");
   };
 
   useEffect(() => {
@@ -148,6 +157,17 @@ function Home() {
         fwcBackendPage++;
       }
       getCharactersFunc(targetIds);
+    }else if(selectedLocation) {
+      if(selectedSpecies){
+        const temp = allCharacters.filter((a)=> a.species === selectedSpecies)
+        setAllCharacters(temp);
+        setTotalCharacters(temp.length);
+      }
+      if(selectedGender){
+        const temp = allCharacters.filter((a)=> a.gender === selectedGender)
+        setAllCharacters(temp);
+        setTotalCharacters(temp.length);
+      }
     }
   }, [debouncedSearchTerm, currentPage, selectedGender, selectedSpecies]);
 
@@ -187,13 +207,42 @@ function Home() {
   } else {
     startIndexInSearchResults = ((currentPage - 1) * Number(pageSize)) % 20;
   }
-  if (!selectedLocation) {
-    displayedCharacters = allCharacters.slice(startIndexInSearchResults, startIndexInSearchResults + Number(pageSize));
-  } else {
-    displayedCharacters = allCharacters.slice(pageSize * (currentPage - 1), pageSize * currentPage)
-    console.log("displayeed: ", displayedCharacters)
-  }
 
+  if (selectedLocation) {
+    allSpecies.map((s) => { s.total = allCharacters.filter((e) => e.species === s.name).length });
+    allGenders.map((g) => { g.total = allCharacters.filter((e) => e.gender === g.name).length });
+  }else{
+    if (firstSelectedFilter === "Species") {
+    if (getCountsSelectedSpecies) {
+      allGenders[0].total = getCountsSelectedSpecies.maleCount?.info?.count || 0;
+      allGenders[1].total = getCountsSelectedSpecies.femaleCount?.info?.count || 0;
+      allGenders[2].total = getCountsSelectedSpecies.unknownGenderCount?.info?.count || 0;
+      allGenders[3].total = getCountsSelectedSpecies.genderlessCount?.info?.count || 0;
+    }
+  }
+  if (firstSelectedFilter === "Gender") {
+    if (getCountsSelectedGender) {
+      allSpecies[0].total = getCountsSelectedGender.humanCount?.info?.count || 0;
+      allSpecies[1].total = getCountsSelectedGender.alienCount?.info?.count || 0;
+      allSpecies[2].total = getCountsSelectedGender.humanoidCount?.info?.count || 0;
+      allSpecies[3].total = getCountsSelectedGender.animalCount?.info?.count || 0;
+      allSpecies[4].total = getCountsSelectedGender.robotCount?.info?.count || 0;
+      allSpecies[5].total = getCountsSelectedGender.cronenbergCount?.info?.count || 0;
+      allSpecies[6].total = getCountsSelectedGender.mythologCount?.info?.count || 0;
+      allSpecies[7].total = getCountsSelectedGender.diseaseCount?.info?.count || 0;
+      allSpecies[8].total = getCountsSelectedGender.poopybuttholeCount?.info?.count || 0;
+      allSpecies[9].total = getCountsSelectedGender.unknownSpeciesCount?.info?.count || 0;
+    }
+  }
+  }
+  
+
+
+  if (selectedLocation) {
+    displayedCharacters = allCharacters.slice(pageSize * (currentPage - 1), pageSize * currentPage)
+  } else {
+    displayedCharacters = allCharacters.slice(startIndexInSearchResults, startIndexInSearchResults + Number(pageSize));
+  }
 
   //if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
@@ -252,6 +301,8 @@ function Home() {
                   setSelectedGender('');
                   setSelectedSpecies('');
                   setSelectedLocation('');
+                  setFirstSelectedFilter("");
+                  setLocationSearchTerm("");
                 }}
                 className={styles.clearFiltersBtn}
                 style={{
@@ -291,18 +342,11 @@ function Home() {
                 <span className={styles.filterGroupTitle}>GENDER</span>
                 <Radio.Group value={selectedGender} onChange={handleRadioChange} style={{ width: '100%' }}>
                   <Space direction="vertical" style={{ width: '100%' }}>
-                    <Radio value="Male">
-                      <span className={styles.filterLabel}>Male</span> <span className={styles.filterCount}>{filtersCountsData?.maleCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Female">
-                      <span className={styles.filterLabel}>Female</span> <span className={styles.filterCount}>{filtersCountsData?.femaleCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="unknown">
-                      <span className={styles.filterLabel}>unknown</span> <span className={styles.filterCount}>{filtersCountsData?.unknownGenderCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Genderless">
-                      <span className={styles.filterLabel}>Genderless</span> <span className={styles.filterCount}>{filtersCountsData?.genderlessCount?.info?.count || 0}</span>
-                    </Radio>
+                    {allGenders.map((g) => (g.total > 0 &&
+                      <Radio value={g.name}>
+                        <span className={styles.filterLabel}>{g.name}</span> <span className={styles.filterCount}>{g.total}</span>
+                      </Radio>
+                    ))}
                   </Space>
                 </Radio.Group>
               </div>
@@ -315,36 +359,11 @@ function Home() {
                 <span className={styles.filterGroupTitle}>SPECIES</span>
                 <Radio.Group value={selectedSpecies} onChange={handleSpeciesChange} style={{ width: '100%' }}>
                   <Space direction="vertical" style={{ width: '100%' }}>
-                    <Radio value="Human">
-                      <span className={styles.filterLabel}>Human</span> <span className={styles.filterCount}>{filtersCountsData?.humanCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Alien">
-                      <span className={styles.filterLabel}>Alien</span> <span className={styles.filterCount}>{filtersCountsData?.alienCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Humanoid">
-                      <span className={styles.filterLabel}>Humanoid</span> <span className={styles.filterCount}>{filtersCountsData?.humanoidCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Animal">
-                      <span className={styles.filterLabel}>Animal</span> <span className={styles.filterCount}>{filtersCountsData?.animalCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Robot">
-                      <span className={styles.filterLabel}>Robot</span> <span className={styles.filterCount}>{filtersCountsData?.robotCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Cronenberg">
-                      <span className={styles.filterLabel}>Cronenberg</span> <span className={styles.filterCount}>{filtersCountsData?.cronenbergCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Mytholog">
-                      <span className={styles.filterLabel}>Mytholog</span> <span className={styles.filterCount}>{filtersCountsData?.mythologCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Disease">
-                      <span className={styles.filterLabel}>Disease</span> <span className={styles.filterCount}>{filtersCountsData?.diseaseCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="Poopybutthole">
-                      <span className={styles.filterLabel}>Poopybutthole</span> <span className={styles.filterCount}>{filtersCountsData?.poopybuttholeCount?.info?.count || 0}</span>
-                    </Radio>
-                    <Radio value="unknown">
-                      <span className={styles.filterLabel}>unknown</span> <span className={styles.filterCount}>{filtersCountsData?.unknownSpeciesCount?.info?.count || 0}</span>
-                    </Radio>
+                    {allSpecies.map((s) => (s.total > 0 &&
+                      <Radio value={s.name}>
+                        <span className={styles.filterLabel}>{s.name}</span> <span className={styles.filterCount}>{s.total}</span>
+                      </Radio>
+                    ))}
                   </Space>
                 </Radio.Group>
               </div>
@@ -366,42 +385,39 @@ function Home() {
                 {/* Lokasyon Seçenekleri */}
                 <Radio.Group value={selectedLocation} onChange={handleLocationChange} style={{ width: '100%' }}>
                   <Space direction="vertical" style={{ width: '100%' }}>
-                    {debouncedLocationSearchTerm.length === 0 ? (
+                    {searchedLocations.length > 0 ? (searchedLocations.map((locs) => (
+                      <Radio key={locs.id || locs.name} value={locs.name}>
+                        <span className={styles.filterLabel}>{locs.name}</span>
+                        {!firstSelectedFilter && <span className={styles.filterCount}>{locs.residents?.length || 0}</span>}
+                      </Radio>
+                    ))) : (searchedLocations.length === 0) && (debouncedLocationSearchTerm.length > 0) ? (
+                      <span style={{ color: '#8c8c8c', fontSize: '14px', paddingLeft: '8px' }}>
+                        No Results
+                      </span>
+                    ) : (
                       <>
                         <Radio value="Earth (Replacement Dimension)">
                           <span className={styles.filterLabel}>Earth (Replacement Dimension)</span>
-                          <span className={styles.filterCount}>{filtersCountsData?.earthReplacementDimensionCount?.results?.[0]?.residents?.length || 0}</span>
+                          {!firstSelectedFilter && <span className={styles.filterCount}>{filtersCountsData?.earthReplacementDimensionCount?.results?.[0]?.residents?.length || 0}</span>}
                         </Radio>
                         <Radio value="Citadel of Ricks">
                           <span className={styles.filterLabel}>Citadel of Ricks</span>
-                          <span className={styles.filterCount}>{filtersCountsData?.citadelofRicksCount?.results?.[0]?.residents?.length || 0}</span>
+                          {!firstSelectedFilter && <span className={styles.filterCount}>{filtersCountsData?.citadelofRicksCount?.results?.[0]?.residents?.length || 0}</span>}
                         </Radio>
                         <Radio value="Interdimensional Cable">
                           <span className={styles.filterLabel}>Interdimensional Cable</span>
-                          <span className={styles.filterCount}>{filtersCountsData?.interdimensionalCableCount?.results?.[0]?.residents?.length || 0}</span>
+                          {!firstSelectedFilter && <span className={styles.filterCount}>{filtersCountsData?.interdimensionalCableCount?.results?.[0]?.residents?.length || 0}</span>}
                         </Radio>
                         <Radio value="Earth (C-137)">
                           <span className={styles.filterLabel}>Earth (C-137)</span>
-                          <span className={styles.filterCount}>{filtersCountsData?.earthC137Count?.results?.[0]?.residents?.length || 0}</span>
+                          {!firstSelectedFilter && <span className={styles.filterCount}>{filtersCountsData?.earthC137Count?.results?.[0]?.residents?.length || 0}</span>}
                         </Radio>
                         <Radio value="Worldender's lair">
                           <span className={styles.filterLabel}>Worldender's lair</span>
-                          <span className={styles.filterCount}>{filtersCountsData?.worldenderslairCount?.results?.[0]?.residents?.length || 0}</span>
+                          {!firstSelectedFilter && <span className={styles.filterCount}>{filtersCountsData?.worldenderslairCount?.results?.[0]?.residents?.length || 0}</span>}
                         </Radio>
                       </>
-                    ) :
-                      searchedLocations.length === 0 ? (
-                        <span style={{ color: '#8c8c8c', fontSize: '14px', paddingLeft: '8px' }}>
-                          No Results
-                        </span>
-                      ) : (
-                        searchedLocations.map((locs) => (
-                          <Radio key={locs.id || locs.name} value={locs.name}>
-                            <span className={styles.filterLabel}>{locs.name}</span>
-                            <span className={styles.filterCount}>{locs.residents?.length || 0}</span>
-                          </Radio>
-                        ))
-                      )}
+                    )}
                   </Space>
                 </Radio.Group>
               </div>
