@@ -2,7 +2,7 @@
 
 Bu proje, hazır bir GraphQL backend mimarisini kullanarak Rick and Morty evrenindeki karakterleri listelemek, aramak ve dinamik olarak filtrelemek amacıyla geliştirilmiş dinamik bir **React** uygulamasıdır.
 
-🔗 **Canlı Önizleme:** [Proje Canlı Linki](https://ricknmorty-sdd-ptk.netlify.app)
+🔗 **Canlı Önizleme:** <a href="https://ricknmorty-sdd-ptk.netlify.app" target="_blank">Proje Canlı Linki</a>
 
 ---
 
@@ -48,7 +48,7 @@ Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları t
 
 3.  **Projeyi Lokalde Başlatın:**
 ```bash
-    npm run dev
+    npm start
     # veya
     yarn dev
     ```
