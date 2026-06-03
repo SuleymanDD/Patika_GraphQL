@@ -1,70 +1,64 @@
-# Getting Started with Create React App
+# Rick and Morty Characters Web App 🚀
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Bu proje, hazır bir GraphQL backend mimarisini kullanarak Rick and Morty evrenindeki karakterleri listelemek, aramak ve dinamik olarak filtrelemek amacıyla geliştirilmiş dinamik bir **React** uygulamasıdır.
 
-## Available Scripts
+🔗 **Canlı Önizleme:** [Proje Canlı Linki](https://senin-netlify-veya-vercel-linkin.netlify.app)
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📌 Proje Amacı ve Gereksinimleri
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Bu çalışma bir ödev projesi kapsamında geliştirilmiş olup, aşağıdaki temel isterleri eksiksiz bir şekilde yerine getirmektedir:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+*   **Görsel Listeleme:** Tüm karakterler, fotoğrafları ve temel bilgileriyle birlikte anasayfada şık bir arayüzle listelenir.
+*   **Sayfalama (Pagination):** Büyük veri setleri arasında rahatça gezinmek için karakter listesinde sayfalama yapısı entegre edilmiştir.
+*   **Arama Fonksiyonu:** Arama input'u aracılığıyla isim, açıklama veya lokasyona göre anlık karakter araması yapılabilir.
+*   **Gelişmiş Filtreleme:** Kullanıcılar cinsiyet (Gender), tür (Species) veya lokasyon (Location) seçimleri yaparak karakterleri daraltabilir.
+*   **Filtre Temizleme:** Seçilen tüm filtreleri tek bir tıkla sıfırlayan "Clear Filters" mekanizması mevcuttur.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠️ Kullanılan Teknolojiler ve Kütüphaneler
 
-### `npm run build`
+Projeyi modern web standartlarına ve performans optimizasyonlarına uygun olarak şu araçlarla geliştirdim:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+*   **Frontend Framework:** React (Vite ile optimize edilmiş geliştirme ortamı)
+*   **Data Fetching & State Management:** GraphQL & Apollo Client (Backend verilerini performanslı sorgulamak ve önbelleğe almak için)
+*   **Styling / Tasarım:** CSS / [Kullandığın UI kütüphanesi varsa buraya yaz örn: Tailwind CSS, Material UI]
+*   **Deployment:** Netlify
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🚀 Kurulum ve Çalıştırma
 
-### `npm run eject`
+Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları takip edebilirsiniz:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1.  **Projeyi Klonlayın:**
+```bash
+    git clone [https://github.com/kullanici-adin/repo-adin.git](https://github.com/kullanici-adin/repo-adin.git)
+    cd repo-adin
+    ```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2.  **Bağımlılıkları Yükleyin:**
+```bash
+    npm install
+    # veya
+    yarn install
+    ```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+3.  **Projeyi Lokalde Başlatın:**
+```bash
+    npm run dev
+    # veya
+    yarn dev
+    ```
+    Tarayıcınızda `http://localhost:5173` (veya terminalde belirtilen port) adresini açarak uygulamayı test edebilirsiniz.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 📋 Veri Kaynağı
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Uygulama, veri iletişimi için herkese açık olan resmi [Rick and Morty GraphQL API](https://rickandmortyapi.com/graphql) altyapısını kullanmaktadır.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+İyi eğlenceler! 🌌 "Wubba Lubba Dub Dub!"
