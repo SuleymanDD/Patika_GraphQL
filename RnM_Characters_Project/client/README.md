@@ -2,7 +2,7 @@
 
 Bu proje, hazır bir GraphQL backend mimarisini kullanarak Rick and Morty evrenindeki karakterleri listelemek, aramak ve dinamik olarak filtrelemek amacıyla geliştirilmiş dinamik bir **React** uygulamasıdır.
 
-🔗 **Canlı Önizleme:** [Proje Canlı Linki](https://senin-netlify-veya-vercel-linkin.netlify.app)
+🔗 **Canlı Önizleme:** [Proje Canlı Linki](https://ricknmorty-sdd-ptk.netlify.app)
 
 ---
 
@@ -24,7 +24,7 @@ Projeyi modern web standartlarına ve performans optimizasyonlarına uygun olara
 
 *   **Frontend Framework:** React (Vite ile optimize edilmiş geliştirme ortamı)
 *   **Data Fetching & State Management:** GraphQL & Apollo Client (Backend verilerini performanslı sorgulamak ve önbelleğe almak için)
-*   **Styling / Tasarım:** CSS / [Kullandığın UI kütüphanesi varsa buraya yaz örn: Tailwind CSS, Material UI]
+*   **Styling / Tasarım:** CSS
 *   **Deployment:** Netlify
 
 ---
@@ -35,8 +35,8 @@ Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları t
 
 1.  **Projeyi Klonlayın:**
 ```bash
-    git clone [https://github.com/kullanici-adin/repo-adin.git](https://github.com/kullanici-adin/repo-adin.git)
-    cd repo-adin
+    git clone (https://github.com/SuleymanDD/Patika_GraphQL.git)
+    cd Patika_GraphQL/RnM_Characters_Project/client
     ```
 
 2.  **Bağımlılıkları Yükleyin:**
@@ -52,7 +52,7 @@ Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları t
     # veya
     yarn dev
     ```
-    Tarayıcınızda `http://localhost:5173` (veya terminalde belirtilen port) adresini açarak uygulamayı test edebilirsiniz.
+    Tarayıcınızda `http://localhost:4000` (veya terminalde belirtilen port) adresini açarak uygulamayı test edebilirsiniz.
 
 ---
 
