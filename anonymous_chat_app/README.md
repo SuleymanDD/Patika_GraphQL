@@ -42,6 +42,7 @@ npm install
 
 # Sunucuyu başlatın
 npm run dev
+```
 
 ### 3. Frontend Kurulumu
 ```bash
@@ -53,3 +54,6 @@ npm install
 
 # Sunucuyu başlatın
 npm start
+```
+
+**SkillCamp.dev (Patika.dev) tarafından düzenlenmiş olan GraphQL eğitimi kapsamında istenilmiş olan ödev projesi başarıyla tamamlanmıştır.**
