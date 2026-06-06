@@ -1,0 +1,192 @@
+/* Ekranı ortalayan modern arka plan */
+.chatScreenContainer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Tasarımdaki özel sarımsı tonda, gölgeli chat kutusu */
+.chatCard {
+  width: 60%; 
+  height: 80%;
+  background-color: #fff9e6;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Üst Başlık Barı */
+.chatHeader {
+  padding: 16px 20px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.chatTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #001529;
+  display: block;
+}
+
+.chatStatus {
+  font-size: 12px;
+  color: #8c8c8c;
+  display: flex;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  transition: background-color 0.3s ease;
+}
+/* Mesaj VARSA (Aktif - Ant Design Yeşili) */
+.statusDot.active {
+  background-color: #52c41a;
+}
+
+/* Mesaj YOKSA (Pasif - Ant Design Kırmızısı) */
+.statusDot.passive {
+  background-color: #ff4d4f;
+}
+
+/* Ana mesajlaşma alanı */
+.chatMessagesArea {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Mesaj gruplarının arasındaki dikey mesafe */
+  background-color: #fff9e6;
+}
+
+/* Avatar+İsim grubu ile Mesaj Balonunu YAN YANA getiren satır */
+.messageRow {
+  display: flex;
+  align-items: flex-start; /* Elemanları yukarı sıfırlar */
+  gap: 12px; /* Sol blok ile mesaj balonu arasındaki yatay mesafe */
+  width: 100%;
+}
+
+/* Sol taraftaki Avatar ve İsmi ALT ALTA tutan mini kapsayıcı */
+.metaContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* İsmi avatarın ortasına hizalar */
+  width: 50px; /* Sabit genişlik vererek balonların hizasını eşitler */
+  flex-shrink: 0;
+}
+
+/* Yuvarlak Profil İkonu */
+.messageAvatar {
+  width: 36px;
+  height: 36px;
+  background-color: #1677ff; /* Görseldeki canlı mavi tonu */
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* Avatarın tam altındaki kullanıcı ismi */
+.messageSender {
+  font-size: 11px;
+  color: #8c8c8c;
+  margin-top: 4px;
+  text-align: center;
+  white-space: nowrap; /* İsmin kırılmasını önler */
+}
+
+/* Mesajın yazılı olduğu beyaz balon (Avatarın sağında kalır) */
+.messageBubble {
+  background-color: #ffffff;
+  color: #262626;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  word-break: break-word;
+  max-width: 70%; /* Ekranı tamamen kaplamasını engeller */
+  margin-top: 2px; /* Avatar tepe noktasıyla şık bir hizada durması için hafif pay */
+}
+
+.messageRow.rightAligned {
+  flex-direction: row-reverse; /* Önce balon, sonra avatar sıralansın (sağdan sola) */
+  align-self: flex-end;       /* Satırın kendisini tamamen sağa dayar */
+}
+
+/* Sağa yaslanan mesajın balonu Ant Design tarzında farklı renkte (örneğin mavi) olsun istersen: */
+.messageRow.rightAligned .messageBubble {
+  background-color: #1677ff; /* Antd Mavisi */
+  color: #ffffff;            /* Beyaz yazı rengi */
+  box-shadow: 0 1px 3px rgba(22, 119, 255, 0.2);
+}
+
+/* Sağa yaslanan mesajın avatar rengini de değiştirmek istersen (isteğe bağlı): */
+.messageRow.rightAligned .messageAvatar {
+  background-color: #52c41a; /* Yeşil veya istediğin başka bir renk */
+}
+
+/* Giriş Alanı / Footer */
+.chatFooter {
+  padding: 14px 20px;
+  background-color: #ffffff;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.chatInputField {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid #d9d9d9;
+  border-radius: 20px;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s;
+}
+
+.chatInputField:focus {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.15);
+}
+
+.chatSendBtn {
+  width: 36px;
+  height: 36px;
+  background-color: #1677ff;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+}
+
+.chatSendBtn:hover {
+  background-color: #40a9ff;
+}
